@@ -6,5 +6,5 @@ categories: {{ dir }}
 excerpt:
 tags: []
 image:
-  feature:
+  feature: banner1.jpg
 ---

@@ -6,7 +6,7 @@ categories:
 excerpt:
 tags: []
 image:
-  feature: banner2.jpg
+  feature: banner1.jpg
 date: 2014-08-31T11:48:44+02:00
 ---
 
