@@ -4,6 +4,7 @@ title: "Introducing ClammyScan"
 modified:
 categories:
 excerpt: "Scanning file upload streams with ClamAV in Play framework."
+comments: true
 tags: [scala, play, clamav, reactive-mongo, mongodb, anti-virus]
 image:
   feature: banner1.jpg
