@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Reads/Writes for abstract classes/traits"
-modified:
+modified: 2015-03-29T19:38:02+02:00
 categories:
 excerpt: The built-in JSON (de-)serialization mechanisms in the playframework are really powerful. But they have a couple of shortcomings. One of which is being able to (de-)serialize a trait or an abstract class as the correct child implementation.
 tags: [Playframework, Scala]
