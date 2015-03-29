@@ -18,11 +18,11 @@ I've come across this scenario a couple of times now. Each time I've tried all s
 ## The problem
 Say we have the following simple representation of Animals
 
-```scala
+{% codeblock [lang:scala] [Animals] %}
 trait Animal
 case class Cat(name: String) extends Animal
 case class Dog(name: String) extends Animal
-```
+{% endcodeblock %}
 
 If we now want need to expose Cats and Dogs as JSON, we would typically implement an implicit Reads and Writes for those case classes. A common pattern is to do this in the companion objects.
 
