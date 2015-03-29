@@ -9,7 +9,6 @@ url: http://www.scalytica.net
 # Jekyll configuration
 
 permalink:   /:categories/:title/
-markdown:    kramdown
 highlighter: pygments
 sass:
   sass_dir: _sass
@@ -17,12 +16,22 @@ sass:
 gems:
   - jekyll-sitemap
 
+# Markdown and code highlighting
+#markdown: kramdown
+
+markdown: redcarpet
+markdown_ext:  markdown,mkdown,mkdn,mkd,md
+
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "strikethrough", "superscript","tables", "with_toc_data"]
+
 kramdown:
-  auto_ids: true
-  footnote_nr: 1
-  entity_output: as_char
-  toc_levels: 1..6
-  use_coderay: false
+  input: GFM
+#  auto_ids: true
+#  footnote_nr: 1
+#  entity_output: as_char
+#  toc_levels: 1..6
+#  use_coderay: true
 
 
 # Site owner
