@@ -3,7 +3,7 @@
  */
 package net.scalytica.blaargh.styles
 
-import net.scalytica.blaargh.components.{ArticlePreview, HeaderSVG, Navbar}
+import net.scalytica.blaargh.components._
 import net.scalytica.blaargh.pages.AboutPage
 
 import scalacss.ScalaCssReact._
@@ -19,7 +19,8 @@ object CSSRegistry {
       HeaderSVG.Styles,
       Navbar.Styles,
       ArticlePreview.Styles,
-      AboutPage.Styles
+      AboutPage.Styles,
+      ArticleView.Styles
     )
   }
 

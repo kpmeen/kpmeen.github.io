@@ -8,6 +8,20 @@ import scalacss.Defaults._
 object BlaarghBootstrapCSS extends StyleSheet.Inline {
   import dsl._
 
+  object Mixins {
+    val container = mixin(addClassName("container"))
+    val row = mixin(addClassName("row"))
+    val card = mixin(addClassName("card"))
+    val cardBlock = mixin(addClassName("card-block"))
+    val cardTitle = mixin(addClassName("card-title"))
+    val cardText = mixin(addClassName("card-text"))
+    val imgCircle = mixin(addClassName("img-circle"))
+    val centerBlock = mixin(addClassName("center-block"))
+    val textMuted = mixin(addClassName("text-muted"))
+    val textXsRight = mixin(addClassName("text-xs-right"))
+    val navbarFixedBottom = mixin(addClassName("navbar-fixed-bottom"))
+  }
+
   val blaarghHeader = style("blaargh-header")(
     flex := "0 1 auto",
     marginTop(4.em),
@@ -41,6 +55,8 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
   val blaarghFooter = style("blaargh-footer")(
     Mixins.textXsRight,
     Mixins.textMuted,
+    Mixins.navbarFixedBottom,
+    backgroundColor.whitesmoke,
     flex := "0 1 40px"
   )
 
@@ -49,19 +65,6 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
     flexFlow := "column",
     height(100.%%)
   )
-
-  object Mixins {
-    val container = mixin(addClassName("container"))
-    val row = mixin(addClassName("row"))
-    val card = mixin(addClassName("card"))
-    val cardBlock = mixin(addClassName("card-block"))
-    val cardTitle = mixin(addClassName("card-title"))
-    val cardText = mixin(addClassName("card-text"))
-    val imgCircle = mixin(addClassName("img-circle"))
-    val centerBlock = mixin(addClassName("center-block"))
-    val textMuted = mixin(addClassName("text-muted"))
-    val textXsRight = mixin(addClassName("text-xs-right"))
-  }
 
   val container = style("blaargh-container")(Mixins.container)
   val row = style("blaargh-row")(Mixins.row)
