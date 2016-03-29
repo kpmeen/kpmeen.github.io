@@ -76,3 +76,4 @@ crossTarget in(Compile, packageScalaJSLauncher) := file(jsTarget)
 crossTarget in(Compile, packageMinifiedJSDependencies) := file(jsTarget)
 
 artifactPath in(Compile, fastOptJS) := ((crossTarget in(Compile, fastOptJS)).value / ((moduleName in fastOptJS).value + "-opt.js"))
+artifactPath in(Compile, fullOptJS) := ((crossTarget in(Compile, fullOptJS)).value / ((moduleName in fullOptJS).value + "-opt.js"))
