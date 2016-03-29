@@ -6,13 +6,25 @@ package net.scalytica.blaargh.components
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.models.{Article, ArticleRef}
+import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import org.scalajs.dom.document
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js.Dynamic.global
+import scalacss.Defaults._
+import scalacss.ScalaCssReact._
 
 object ArticleView {
+
+  object Styles extends StyleSheet.Inline {
+
+    import dsl._
+
+    val post = style("blaargh-post")(
+      paddingBottom(5.rem)
+    )
+  }
 
   case class Props(article: Future[Option[Article]], ref: ArticleRef)
 
@@ -40,16 +52,16 @@ object ArticleView {
     }
 
     def render(props: Props, state: State) =
-      <.div(^.className := "container",
+      <.div(BlaarghBootstrapCSS.container,
         state.content.map(c =>
-          <.div(^.className := "post",
+          <.div(Styles.post,
             state.article.map(a => <.h1(a.title)).getOrElse(EmptyTag),
             <.span(
               ^.dangerouslySetInnerHtml(c)
             )
           )
         ).getOrElse(
-          <.div(^.className := "post")
+          <.div(Styles.post)
         )
       )
   }

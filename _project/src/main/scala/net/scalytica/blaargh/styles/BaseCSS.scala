@@ -17,9 +17,9 @@ object BaseCSS extends StyleSheet.Inline {
   ))
 
   val base = style(unsafeRoot("html, body")(
-    height(100.%%),
     margin.`0`,
-    fontSize(14.px)
+    fontSize(14.px),
+    height(100.%%)
   ))
 
   val app = style("blaargh")(
