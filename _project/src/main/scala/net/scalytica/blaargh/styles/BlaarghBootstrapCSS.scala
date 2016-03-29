@@ -49,7 +49,8 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
   )
 
   val blaarghContent = style("blaargh-content")(
-    flex := "1 1 auto"
+    flex := "1 1 auto",
+    paddingTop(2.em)
   )
 
   val blaarghFooter = style("blaargh-footer")(
