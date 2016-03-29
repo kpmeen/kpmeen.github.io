@@ -42,11 +42,13 @@ object ArticleView {
         }
       )
 
-    def highlight = Callback {
-      val elems = document.getElementsByTagName("code")
-      for (i <- 0 to elems.length) {
-        if (elems(i).parentNode.nodeName.equalsIgnoreCase("pre")) {
-          global.hljs.highlightBlock(elems(i))
+    def highlight = $.state.map { s =>
+      s.content.foreach { _ =>
+        val elems = document.getElementsByTagName("code")
+        for (i <- 0 to elems.length) {
+          if (elems(i).parentNode.nodeName.equalsIgnoreCase("pre")) {
+            global.hljs.highlightBlock(elems(i))
+          }
         }
       }
     }
