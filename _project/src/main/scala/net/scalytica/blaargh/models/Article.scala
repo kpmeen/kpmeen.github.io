@@ -44,6 +44,12 @@ object Article {
       }
     }
 
+  def findByFilename(filename: String, fsa: Future[Seq[Article]]): Future[Option[Article]] =
+    fsa.map(_.find(_.filename == filename))
+
+  def filterByAuthor(author: String, fsa: Future[Seq[Article]]): Future[Seq[Article]] =
+    fsa.map(_.filter(_.author == author))
+
   def fetchAll: Future[Seq[Article]] =
     Ajax.get(
       url = "posts/posts.json",
