@@ -1,0 +1,19 @@
+{
+  "siteTitle": "Blaargh!",
+  "authors": [
+    {
+      "name": "John Doe",
+      "email": "john@mailinator.com"
+    }
+  ],
+  "owner": {
+    "name": "John Doe",
+    "avatar": "",
+    "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a lorem quis neque interdum consequat ut sed sem. Duis quis tempor nunc. Interdum et malesuada fames ac ante ipsum primis in faucibus.",
+    "email": "",
+    "disqusShortname": "",
+    "twitter": "",
+    "googleAnalytics": "",
+    "github": ""
+  }
+}
