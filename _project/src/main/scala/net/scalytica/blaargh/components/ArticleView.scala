@@ -46,8 +46,10 @@ object ArticleView {
       s.content.foreach { _ =>
         val elems = document.getElementsByTagName("code")
         for (i <- 0 to elems.length) {
-          if (elems(i).parentNode.nodeName.equalsIgnoreCase("pre")) {
-            global.hljs.highlightBlock(elems(i))
+          Option(elems(i).parentNode).foreach { parent =>
+            if (parent.nodeName.equalsIgnoreCase("pre")) {
+              global.hljs.highlightBlock(elems(i))
+            }
           }
         }
       }
