@@ -1,19 +1,19 @@
 {
-  "siteTitle": "Blaargh!",
+  "siteTitle": "Scalytica",
   "authors": [
     {
-      "name": "John Doe",
-      "email": "john@mailinator.com"
+      "name": "Knut Petter Meen",
+      "email": "kp@scalytica.net"
     }
   ],
   "owner": {
-    "name": "John Doe",
-    "avatar": "",
-    "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a lorem quis neque interdum consequat ut sed sem. Duis quis tempor nunc. Interdum et malesuada fames ac ante ipsum primis in faucibus.",
-    "email": "",
-    "disqusShortname": "",
-    "twitter": "",
-    "googleAnalytics": "",
-    "github": ""
+    "name": "Knut Petter Meen",
+    "avatar": "http://s.gravatar.com/avatar/8897e8c4377ba01b8e9eaccfd7819e1b",
+    "bio": "Problem solver",
+    "email": "kp@scalytica.net",
+    "disqusShortname": "scalytica",
+    "twitter": "KnutPMeen",
+    "googleAnalytics": "UA-35636560-1",
+    "github": "kpmeen"
   }
 }

@@ -37,7 +37,7 @@ object HeaderSVG {
         textTransform.uppercase
       ),
       unsafeChild("#base")(
-        svgFill := "black",
+        svgFill := "white",
         mask := "url(#mask)"
       )
     )

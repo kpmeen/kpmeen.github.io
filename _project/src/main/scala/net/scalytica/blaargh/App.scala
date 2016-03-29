@@ -7,7 +7,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.components.{ArticleView, Footer, HeaderSVG, Navbar}
-import net.scalytica.blaargh.models.{ArticleRef, Config}
+import net.scalytica.blaargh.models.{Article, ArticleRef, Config}
 import net.scalytica.blaargh.pages._
 import net.scalytica.blaargh.styles.{BlaarghBootstrapCSS, CSSRegistry}
 
@@ -30,20 +30,22 @@ object App extends JSApp {
 
   case class Posts(ref: ArticleRef) extends View
 
-  val siteConfig = Config.load()
+  val SiteConfig = Config.load()
+  val Articles = Article.fetchAll
 
   val postsRule = RouterConfigDsl[ArticleRef].buildRule { dsl =>
     import dsl._
 
-    dynamicRouteCT((string("[^\\/]*") / string("(.*)$")).caseClass[ArticleRef]) ~> dynRenderR((ref, ctl) => ArticleView(ref))
+    dynamicRouteCT((string("[^\\/]*") / string("(.*)$")).caseClass[ArticleRef]) ~>
+      dynRenderR((ref, ctl) => ArticleView(Article.findByFilename(ref.filename, Articles), ref))
   }
 
   val routerConfig = RouterConfigDsl[View].buildConfig { dsl =>
     import dsl._
 
     (trimSlashes
-      | staticRoute("", Home) ~> renderR(ctl => HomePage(ctl))
-      | staticRoute("#about", About) ~> render(AboutPage(siteConfig))
+      | staticRoute("", Home) ~> renderR(ctl => HomePage(Articles, ctl))
+      | staticRoute("#about", About) ~> render(AboutPage(SiteConfig))
       | staticRoute("#notfound", NotFound) ~> render(NotFoundPage())
       | postsRule.prefixPath_/("#posts").pmap[View](Posts) { case Posts(ref) => ref }
       )
@@ -52,7 +54,7 @@ object App extends JSApp {
   }
 
   def layout(ctl: RouterCtl[View], r: Resolution[View]) = {
-    BlaarghLayout(siteConfig, ctl, r)
+    BlaarghLayout(SiteConfig, ctl, r)
   }
 
   val baseUrl = BaseUrl.until_#
@@ -67,14 +69,14 @@ object App extends JSApp {
 
   object BlaarghLayout {
 
-    case class Props(conf: Future[Config], ctl: RouterCtl[View], r: Resolution[View])
+    case class Props(futureConf: Future[Config], ctl: RouterCtl[View], r: Resolution[View])
     case class State(conf: Config, ctl: RouterCtl[View], r: Resolution[View])
 
     class Backend($: BackendScope[Props, State]) {
       def init: Callback = {
         $.props.map(p =>
           Callback.future[Unit] {
-            p.conf.map(c => $.modState(_.copy(conf = c)))
+            p.futureConf.map(c => $.modState(_.copy(conf = c)))
           }.runNow()
         )
       }
