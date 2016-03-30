@@ -60,7 +60,7 @@ object Article {
     ).map { xhr =>
       xhr.status match {
         case ok: Int if ok == 200 =>
-          read[Seq[Article]](xhr.responseText).sortBy(a => a.date)
+          read[Seq[Article]](xhr.responseText).sortBy(a => a.date).reverse
 
         case err =>
           Seq.empty[Article]
