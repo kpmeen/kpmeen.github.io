@@ -20,6 +20,7 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
     val textMuted = mixin(addClassName("text-muted"))
     val textXsRight = mixin(addClassName("text-xs-right"))
     val navbarFixedBottom = mixin(addClassName("navbar-fixed-bottom"))
+    val label = mixin(addClassNames("label", "label-info"))
   }
 
   val blaarghHeader = style("blaargh-header")(
@@ -31,7 +32,7 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
   val blaarghHeaderSVGContainer = style(
     minHeight(20.em),
     backgroundImage := "url(assets/images/banner.png)",
-    backgroundSize := "cover",
+    backgroundSize := "contain",
     backgroundRepeat := "no-repeat",
     backgroundPosition := "center",
     marginBottom(20.px),
@@ -78,5 +79,11 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
   val centerBlock = style("blaargh-center-block")(Mixins.centerBlock)
   val textMuted = style("blaargh-text-muted")(Mixins.textMuted)
   val textXsRight = style("blaargh-text-xs-right")(Mixins.textXsRight)
+  val label = style("blaargh-label")(
+    Mixins.label,
+    padding(.4.em),
+    marginLeft(.2.em),
+    marginRight(.2.em)
+  )
 
 }

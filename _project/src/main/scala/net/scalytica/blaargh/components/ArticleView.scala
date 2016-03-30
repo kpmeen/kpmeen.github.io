@@ -1,6 +1,6 @@
 /**
- * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
- */
+  * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+  */
 package net.scalytica.blaargh.components
 
 import japgolly.scalajs.react._
@@ -61,7 +61,10 @@ object ArticleView {
           <.div(Styles.post,
             state.article.map(a => <.h1(a.title)).getOrElse(EmptyTag),
             state.article.map(a =>
-              <.p(BlaarghBootstrapCSS.textMuted, s"Written by ${a.author} on ${a.asJsDate.toDateString()}")
+              <.p(
+                <.span(BlaarghBootstrapCSS.textMuted, s"Written by ${a.author} on ${a.asJsDate.toDateString()}"),
+                <.span(^.marginLeft :="2rem", a.labels.map(Label.apply))
+              )
             ).getOrElse(EmptyTag),
             <.span(
               ^.dangerouslySetInnerHtml(c)
