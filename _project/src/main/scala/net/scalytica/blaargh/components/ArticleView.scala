@@ -61,7 +61,10 @@ object ArticleView {
           <.div(Styles.post,
             state.article.map(a => <.h1(a.title)).getOrElse(EmptyTag),
             state.article.map(a =>
-              <.p(BlaarghBootstrapCSS.textMuted, s"Written by ${a.author} on ${a.asJsDate.toDateString()}")
+              <.p(
+                <.span(BlaarghBootstrapCSS.textMuted, s"Written by ${a.author} on ${a.asJsDate.toDateString()}"),
+                <.span(^.marginLeft :="2rem", a.labels.map(Label.apply))
+              )
             ).getOrElse(EmptyTag),
             <.span(
               ^.dangerouslySetInnerHtml(c)
