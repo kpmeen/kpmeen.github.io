@@ -1,19 +1,20 @@
 /**
-  * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
-  */
+ * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+ */
 package net.scalytica.blaargh.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.svg.prefix_<^._
 import net.scalytica.blaargh.models.Config
-import scalacss.Defaults._
-import scalacss.ScalaCssReact._
 
 import scala.scalajs.niocharset.StandardCharsets
+import scalacss.Defaults._
+import scalacss.ScalaCssReact._
 
 object HeaderSVG {
 
   object Styles extends StyleSheet.Inline {
+
     import dsl._
 
     val svg = style(

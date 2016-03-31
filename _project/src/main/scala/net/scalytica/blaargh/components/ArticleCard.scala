@@ -1,23 +1,24 @@
 /**
-  * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
-  */
+ * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+ */
 package net.scalytica.blaargh.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
-import net.scalytica.blaargh.App.{Posts, View}
 import net.scalytica.blaargh.models.Article
+import net.scalytica.blaargh.pages.Views.{Posts, View}
 import net.scalytica.blaargh.utils.StringUtils._
 
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
 
-object ArticlePreview {
+object ArticleCard {
 
   case class Props(article: Article, ctl: RouterCtl[View])
 
   object Styles extends StyleSheet.Inline {
+
     import dsl._
 
     val cardTitle = style("blaargh-card-title")(
@@ -44,7 +45,7 @@ object ArticlePreview {
         <.img(Styles.cardImage, ^.src := image, ^.onClick --> openArticleCB(props))
       )
 
-    def openArticleCB(props: Props): Callback = props.ctl.set(Posts(props.article.articleRef))
+    def openArticleCB(props: Props): Callback = props.ctl.byPath.set(Posts(props.article.articleRef).asPath)
 
 
     def render(props: Props) = {
@@ -63,7 +64,9 @@ object ArticlePreview {
                 <.span(s" on "),
                 <.a(^.className := "date", s"${props.article.asJsDate.toDateString()}")
               )
-            )
+            ),
+            if (props.article.labels.nonEmpty) <.span(props.article.labels.map(l => Label(l, props.ctl)))
+            else EmptyTag
           )
         )
       )
@@ -71,7 +74,7 @@ object ArticlePreview {
 
   }
 
-  val component = ReactComponentB[Props]("ArticleView")
+  val component = ReactComponentB[Props]("ArticleCard")
     .stateless
     .renderBackend[Backend]
     .build

@@ -1,6 +1,6 @@
 /**
-  * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
-  */
+ * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+ */
 package net.scalytica.blaargh.models
 
 import org.scalajs.dom.ext.Ajax
@@ -22,21 +22,23 @@ case class Article(
 
   def asJsDate: js.Date = new js.Date(date)
 
-  def shortDate = date.take(10)
+  def articleRef: ArticleRef = ArticleRef(shortDate, filename)
 
-  def articleRef: ArticleRef = ArticleRef(date.take(10), filename)
+  def shortDate = date.take(10)
 
 }
 
 case class ArticleRef(date: String, filename: String) {
-  def relPath = s"posts/$filename.html"
+  def htmlFilePath = s"posts/$filename.html"
+
+  def navigationPath = s"posts/$date/$filename"
 }
 
 object Article {
 
   def get(a: ArticleRef) =
     Ajax.get(
-      url = a.relPath
+      url = a.htmlFilePath
     ).map { xhr =>
       xhr.status match {
         case ok: Int if ok == 200 => Some(xhr.responseText)
@@ -49,6 +51,9 @@ object Article {
 
   def filterByAuthor(author: String, fsa: Future[Seq[Article]]): Future[Seq[Article]] =
     fsa.map(_.filter(_.author == author))
+
+  def filterByLabel(label: String, fsa: Future[Seq[Article]]): Future[Seq[Article]] =
+    fsa.map(_.filter(_.labels.contains(label)))
 
   def fetchAll: Future[Seq[Article]] =
     Ajax.get(
