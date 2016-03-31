@@ -35,7 +35,7 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
   val blaarghHeaderSVGContainer = style(
     minHeight(20.em),
     backgroundImage := "url(assets/images/banner.png)",
-    backgroundSize := "contain",
+    backgroundSize := "cover",
     backgroundRepeat := "no-repeat",
     backgroundPosition := "center",
     marginBottom(20.px),

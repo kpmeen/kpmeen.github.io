@@ -38,7 +38,7 @@ object HeaderSVG {
         textTransform.uppercase
       ),
       unsafeChild("#base")(
-        svgFill := "white",
+        svgFill := "grey",
         mask := "url(#mask)"
       )
     )
@@ -53,7 +53,7 @@ object HeaderSVG {
           <.maskTag(^.id := "mask", ^.x := "0", ^.y := "0", ^.width := "100%", ^.height := "100%",
             <.rect(^.id := "alpha", ^.x := "0", ^.y := "0", ^.width := "100%", ^.height := "100%"),
             <.text(^.id := "title", ^.x := "50%", ^.y := "0", ^.dy := "1.58em")($.props.siteTitle),
-            <.text(^.id := "subtitle", ^.x := "50%", ^.y := "0", ^.dy := "9.8em")(subTitle.mkString(" ")) //"01001011 01010000 01001101")//(s"by ${state.conf.owner.name}")
+            <.text(^.id := "subtitle", ^.x := "50%", ^.y := "0", ^.dy := "9.8em")(subTitle.mkString(" "))
           )
         ),
         <.rect(^.id := "base", ^.x := "0", ^.y := "0", ^.width := "100%", ^.height := "100%")
