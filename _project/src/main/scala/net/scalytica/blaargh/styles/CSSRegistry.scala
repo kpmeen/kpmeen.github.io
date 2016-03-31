@@ -18,7 +18,7 @@ object CSSRegistry {
       BlaarghBootstrapCSS,
       HeaderSVG.Styles,
       Navbar.Styles,
-      ArticlePreview.Styles,
+      ArticleCard.Styles,
       AboutPage.Styles,
       ArticleView.Styles
     )

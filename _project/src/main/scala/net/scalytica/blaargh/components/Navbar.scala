@@ -1,13 +1,13 @@
 /**
-  * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
-  */
+ * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+ */
 package net.scalytica.blaargh.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
-import net.scalytica.blaargh.App.{About, Home, Posts, View}
 import net.scalytica.blaargh.models.Config
+import net.scalytica.blaargh.pages.Views.{About, Home, Posts, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 
 import scalacss.Defaults._
