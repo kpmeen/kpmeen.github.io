@@ -7,25 +7,22 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.components.ArticleCardList
-import net.scalytica.blaargh.models.Article
 import net.scalytica.blaargh.pages.Views.View
-
-import scala.concurrent.Future
 
 
 object HomePage {
 
-  case class Props(articles: Future[Seq[Article]], ctl: RouterCtl[View])
+  case class Props(ctl: RouterCtl[View])
 
   val component = ReactComponentB[Props]("Home")
     .initialState_P(p => p)
     .render { $ =>
       <.div(^.className := "container-fluid",
-        ArticleCardList($.props.articles, $.props.ctl)
+        ArticleCardList($.props.ctl)
       )
     }
     .build
 
 
-  def apply(articles: Future[Seq[Article]], ctl: RouterCtl[View]) = component(Props(articles, ctl))
+  def apply(ctl: RouterCtl[View]) = component(Props(ctl))
 }

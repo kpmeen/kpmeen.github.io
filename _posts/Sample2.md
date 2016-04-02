@@ -3,6 +3,7 @@ title: Lorem markdownum
 author: John Doe
 date: 2016-03-13
 ingress: Lorem markdownum nunc fuerat parvos utque subdita resistite ipsius trementes iacet, ignes sed illa. Ambage me feror
+labels: [foo, bar, fizz]
 ---
 
 # Amores sperabam blanditias pars venientem resque

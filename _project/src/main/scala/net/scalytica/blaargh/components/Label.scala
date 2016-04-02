@@ -6,7 +6,7 @@ package net.scalytica.blaargh.components
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
-import net.scalytica.blaargh.pages.Views.{LabelSearch, View}
+import net.scalytica.blaargh.pages.Views.{Filter, FilterCriteria, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 
 import scalacss.ScalaCssReact._
@@ -21,7 +21,7 @@ object Label {
       <.span(
         BlaarghBootstrapCSS.labelDefault,
         ^.cursor.pointer,
-        ^.onClick --> $.state.ctl.byPath.set(LabelSearch($.props.lbl).asPath),
+        ^.onClick --> $.state.ctl.byPath.set(Filter(FilterCriteria("label", $.props.lbl)).asPath),
         $.props.lbl
       )
     }

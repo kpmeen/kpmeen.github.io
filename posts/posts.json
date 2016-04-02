@@ -22,7 +22,7 @@
     "author": "John Doe",
     "title": "Lorem markdownum",
     "ingress": "Lorem markdownum nunc fuerat parvos utque subdita resistite ipsius trementes iacet, ignes sed illa. Ambage me feror",
-    "labels": [],
+    "labels": ["foo","bar","fizz"],
     "filename": "Sample2",
     "image": ""
   },

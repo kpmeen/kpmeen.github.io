@@ -4,12 +4,15 @@
 package net.scalytica.blaargh.components
 
 import japgolly.scalajs.react._
+import japgolly.scalajs.react.extra._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.models.Config
 import net.scalytica.blaargh.pages.Views.{About, Home, Posts, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
+import org.scalajs.dom
 
+import scala.concurrent.duration._
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
 
@@ -19,21 +22,51 @@ object Navbar {
 
     import dsl._
 
-    val blaarghNav = style("blaargh-nav")(
-      addClassNames("navbar", "navbar-light", "navbar-fixed-top"),
-      zIndex(14),
-      backgroundColor.whitesmoke,
-      boxShadow := "1px 2px, 8px lightgrey"
+    sealed trait MenuItemStatus {
+      val scrolling: Boolean
+    }
+
+    case object ActiveScrolling extends MenuItemStatus {
+      override val scrolling: Boolean = true
+    }
+
+    case object InactiveScrolling extends MenuItemStatus {
+      override val scrolling: Boolean = true
+    }
+
+    case object BrandScrolling extends MenuItemStatus {
+      override val scrolling: Boolean = true
+    }
+
+    case object ActiveNotScrolling extends MenuItemStatus {
+      override val scrolling: Boolean = false
+    }
+
+    case object InactiveNotScrolling extends MenuItemStatus {
+      override val scrolling: Boolean = false
+    }
+
+    case object BrandNotScrolling extends MenuItemStatus {
+      override val scrolling: Boolean = false
+    }
+
+    val menuItemStatusDomain = Domain.ofValues[MenuItemStatus](
+      ActiveScrolling, InactiveScrolling, BrandScrolling
     )
 
-    val navbarBrand = style("blaargh-brand")(
+    val transitionMixin = mixin(
+      transitionDuration(0.4 seconds),
+      transitionTimingFunction.easeOut
+    )
+
+    val blaarghBrand = style("blaargh-brand")(
       addClassName("navbar-brand"),
       marginRight(10.rem)
     )
 
-    val navbarLink = style("blaargh-navbar-link")(addClassName("nav-link"))
+    val blaarghNavbarLink = style("blaargh-navbar-link")(addClassName("nav-link"))
 
-    val navItem = styleF.bool(isActive => styleS(
+    val blaarghNavItem = styleF("blaargh-nav-item").bool(isActive => styleS(
       if (isActive) addClassNames("nav-item", "active") else addClassName("nav-item")
     ))
 
@@ -41,24 +74,58 @@ object Navbar {
     val navToggler = style(addClassNames("navbar-toggler", "hidden-sm-up"))
     val navCollapse = style(addClassNames("collapse", "navbar-toggleable-xs"))
     val navbar = style(addClassNames("nav", "navbar-nav", "pull-right"))
+
+    val blaarghNav = styleF("blaargh-nav").bool { isScrolling =>
+
+      val bg = if (isScrolling) backgroundColor.rgba(245, 245, 245, 0.9) else backgroundColor.transparent
+      val fg = if (isScrolling) color.inherit else color.rgb(245, 245, 245)
+      styleS(
+        addClassNames("navbar", "navbar-light", "navbar-fixed-top"),
+        bg,
+        fg,
+        unsafeChild(".blaargh-brand")(style(color.inherit.important)),
+        unsafeChild(".nav-item .nav-link")(style(
+          color.rgb(150, 150, 150),
+          backgroundColor.inherit
+        )),
+        unsafeChild(".active")(style(
+          unsafeChild(".nav-link")(style(
+            color.inherit.important
+          ))
+        )),
+        zIndex(14),
+        boxShadow := "1px 2px, 8px lightgrey",
+        transitionProperty := "background-color, color",
+        transitionMixin
+      )
+    }
   }
 
   case class Props(siteConfig: Config, currPage: View, ctl: RouterCtl[View])
 
-  val component = ReactComponentB[Props]("Navbar")
-    .render { $ =>
-      val props = $.props
-      def MenuItem(menuName: String, menuItem: View) = {
-        val isActive = props.currPage == menuItem || (menuItem == Home && props.currPage.isInstanceOf[Posts])
+  case class State(isScrolling: Boolean = false)
 
-        <.li(Styles.navItem(isActive),
-          <.a(Styles.navbarLink, ^.href := "_", ^.onClick ==> { (e: ReactEventI) => e.preventDefaultCB >> props.ctl.set(menuItem) },
-            <.span(menuName),
-            if (isActive) <.span(Styles.navActiveHamburger, "(current)") else EmptyTag
-          )
-        )
+  class Backend($: BackendScope[Props, State]) extends OnUnmount {
+
+    def onScroll: Callback =
+      $.state.flatMap { s =>
+        if (dom.window.pageYOffset > 5.0) $.setState(State(isScrolling = true))
+        else $.setState(State())
       }
-      <.nav(Styles.blaarghNav,
+
+    def MenuItem(props: Props, menuName: String, menuItem: View) = {
+      val isActive = props.currPage == menuItem || (menuItem == Home && props.currPage.isInstanceOf[Posts])
+
+      <.li(Styles.blaarghNavItem(isActive),
+        <.a(Styles.blaarghNavbarLink, ^.href := "_", ^.onClick ==> { (e: ReactEventI) => e.preventDefaultCB >> props.ctl.set(menuItem) },
+          <.span(menuName),
+          if (isActive) <.span(Styles.navActiveHamburger, "(current)") else EmptyTag
+        )
+      )
+    }
+
+    def render(props: Props, state: State) = {
+      <.nav(Styles.blaarghNav(state.isScrolling),
         <.div(BlaarghBootstrapCSS.container,
           <.button(
             Styles.navToggler,
@@ -69,22 +136,31 @@ object Navbar {
           ),
           <.div(Styles.navCollapse, ^.id := "collapseNav",
             <.a(
-              Styles.navbarBrand,
+              Styles.blaarghBrand,
               ^.href := "_",
               ^.onClick ==> { (e: ReactEventI) => e.preventDefaultCB >> props.ctl.set(Home) },
               s"${props.siteConfig.siteTitle.toUpperCase}"
             ),
             <.ul(Styles.navbar,
-              MenuItem("BLOG", Home),
-              MenuItem("ABOUT", About)
+              MenuItem(props, "BLOG", Home),
+              MenuItem(props, "ABOUT", About)
             )
           )
         )
       )
     }
+  }
+
+  val component = ReactComponentB[Props]("Navbar")
+    .initialState(State())
+    .renderBackend[Backend]
+    .configure(
+      EventListener.install("scroll", _.backend.onScroll, _ => dom.window, useCapture = true),
+      OnUnmount.install
+    )
     .build
 
-
-  def apply(siteConf: Config, currPage: View, ctl: RouterCtl[View]) = component(Props(siteConf, currPage, ctl))
+  def apply(siteConf: Config, currPage: View, ctl: RouterCtl[View]) =
+    component(Props(siteConf, currPage, ctl))
 
 }

@@ -6,7 +6,8 @@ package net.scalytica.blaargh.components
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
-import net.scalytica.blaargh.models.{Article, ArticleRef}
+import net.scalytica.blaargh.models.Article
+import net.scalytica.blaargh.pages.Views.ArticleRef
 import net.scalytica.blaargh.pages.Views.View
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import org.scalajs.dom.document
@@ -64,8 +65,14 @@ object ArticleView {
             state.article.map(a => <.h1(a.title)).getOrElse(EmptyTag),
             state.article.map(a =>
               <.p(
-                <.span(BlaarghBootstrapCSS.textMuted, s"Written by ${a.author} on ${a.asJsDate.toDateString()}"),
-                <.span(^.marginLeft := "2rem", a.labels.map(l => Label(l, props.ctl.contramap[View](v => props.ref))))
+                <.span(BlaarghBootstrapCSS.textMuted,
+                  s"Written by ${a.author} on ${a.asJsDate.toDateString()}"
+                ),
+                <.span(^.marginLeft := "2rem",
+                  a.labels.map { l =>
+                    Label(l, props.ctl.contramap[View](v => props.ref))
+                  }
+                )
               )
             ).getOrElse(EmptyTag),
             <.span(
@@ -85,6 +92,7 @@ object ArticleView {
     .componentDidUpdate(_.$.backend.highlight)
     .build
 
-  def apply(article: Future[Option[Article]], ref: ArticleRef, ctl: RouterCtl[ArticleRef]) = component(Props(article, ref, ctl))
+  def apply(article: Future[Option[Article]], ref: ArticleRef, ctl: RouterCtl[ArticleRef]) =
+    component(Props(article, ref, ctl))
 
 }
