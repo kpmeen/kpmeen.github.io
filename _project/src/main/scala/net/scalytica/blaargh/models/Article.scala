@@ -3,6 +3,7 @@
  */
 package net.scalytica.blaargh.models
 
+import net.scalytica.blaargh.pages.Views.ArticleRef
 import org.scalajs.dom.ext.Ajax
 import upickle.default._
 
@@ -28,13 +29,9 @@ case class Article(
 
 }
 
-case class ArticleRef(date: String, filename: String) {
-  def htmlFilePath = s"posts/$filename.html"
-
-  def navigationPath = s"posts/$date/$filename"
-}
-
 object Article {
+
+  lazy val Articles = fetchAll
 
   def get(a: ArticleRef) =
     Ajax.get(
@@ -45,15 +42,6 @@ object Article {
         case err => None
       }
     }
-
-  def findByFilename(filename: String, fsa: Future[Seq[Article]]): Future[Option[Article]] =
-    fsa.map(_.find(_.filename == filename))
-
-  def filterByAuthor(author: String, fsa: Future[Seq[Article]]): Future[Seq[Article]] =
-    fsa.map(_.filter(_.author == author))
-
-  def filterByLabel(label: String, fsa: Future[Seq[Article]]): Future[Seq[Article]] =
-    fsa.map(_.filter(_.labels.contains(label)))
 
   def fetchAll: Future[Seq[Article]] =
     Ajax.get(

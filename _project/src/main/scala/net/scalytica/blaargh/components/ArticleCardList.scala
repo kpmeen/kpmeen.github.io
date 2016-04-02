@@ -9,12 +9,11 @@ import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.models.Article
 import net.scalytica.blaargh.pages.Views.View
 
-import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 object ArticleCardList {
 
-  case class Props(articles: Future[Seq[Article]], ctl: RouterCtl[View])
+  case class Props(ctl: RouterCtl[View])
 
   case class State(articles: Seq[Article], ctl: RouterCtl[View])
 
@@ -22,7 +21,7 @@ object ArticleCardList {
     def init: Callback =
       $.props.map(p =>
         Callback.future[Unit] {
-          p.articles.map(a => $.modState(_.copy(articles = a)))
+          Article.Articles.map(a => $.modState(_.copy(articles = a)))
         }.runNow()
       )
 
@@ -40,5 +39,5 @@ object ArticleCardList {
     .componentWillMount($ => $.backend.init)
     .build
 
-  def apply(articles: Future[Seq[Article]], ctl: RouterCtl[View]) = component(Props(articles, ctl))
+  def apply(ctl: RouterCtl[View]) = component(Props(ctl))
 }

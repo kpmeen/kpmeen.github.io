@@ -28,7 +28,6 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
 
   val blaarghHeader = style("blaargh-header")(
     flex := "0 1 auto",
-    marginTop(4.em),
     minHeight(20.em)
   )
 
