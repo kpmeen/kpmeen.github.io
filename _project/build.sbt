@@ -36,6 +36,7 @@ val monocleVersion = "1.2.0"
 libraryDependencies ++= Seq(
   compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
   "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
+  "org.scala-js" %%% "scalajs-dom" % "0.9.0",
   "com.github.japgolly.scalajs-react" %%% "core" % scalaJSReactVersion,
   "com.github.japgolly.scalajs-react" %%% "extra" % scalaJSReactVersion,
   "com.github.japgolly.scalajs-react" %%% "ext-scalaz72" % scalaJSReactVersion,
