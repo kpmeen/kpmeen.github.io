@@ -3,6 +3,8 @@
  */
 package net.scalytica.blaargh.styles
 
+import scala.concurrent.duration._
+
 import scalacss.Defaults._
 
 object BlaarghBootstrapCSS extends StyleSheet.Inline {
@@ -24,6 +26,16 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
     val navbarFixedBottom = mixin(addClassName("navbar-fixed-bottom"))
     val labelDefault = mixin(addClassNames("label", "label-default"))
     val labelInfo = mixin(addClassNames("label", "label-info"))
+
+    val cardShadow = mixin(
+      boxShadow := "5px 5px 30px -12px rgba(125,125,125,1)"
+    )
+
+    val cardShadowAnimation = mixin(
+      transitionProperty := "box-shadow",
+      transitionDuration(0.4 seconds),
+      transitionTimingFunction.easeOut
+    )
   }
 
   val blaarghHeader = style("blaargh-header")(

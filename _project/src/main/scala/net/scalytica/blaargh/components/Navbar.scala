@@ -22,38 +22,6 @@ object Navbar {
 
     import dsl._
 
-    sealed trait MenuItemStatus {
-      val scrolling: Boolean
-    }
-
-    case object ActiveScrolling extends MenuItemStatus {
-      override val scrolling: Boolean = true
-    }
-
-    case object InactiveScrolling extends MenuItemStatus {
-      override val scrolling: Boolean = true
-    }
-
-    case object BrandScrolling extends MenuItemStatus {
-      override val scrolling: Boolean = true
-    }
-
-    case object ActiveNotScrolling extends MenuItemStatus {
-      override val scrolling: Boolean = false
-    }
-
-    case object InactiveNotScrolling extends MenuItemStatus {
-      override val scrolling: Boolean = false
-    }
-
-    case object BrandNotScrolling extends MenuItemStatus {
-      override val scrolling: Boolean = false
-    }
-
-    val menuItemStatusDomain = Domain.ofValues[MenuItemStatus](
-      ActiveScrolling, InactiveScrolling, BrandScrolling
-    )
-
     val transitionMixin = mixin(
       transitionDuration(0.4 seconds),
       transitionTimingFunction.easeOut

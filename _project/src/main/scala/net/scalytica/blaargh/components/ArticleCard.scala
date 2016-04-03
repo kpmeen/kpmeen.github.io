@@ -7,7 +7,8 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.models.Article
-import net.scalytica.blaargh.pages.Views.{Posts, View}
+import net.scalytica.blaargh.pages.Views.{Filter, FilterCriteria, Posts, View}
+import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import net.scalytica.blaargh.utils.StringUtils._
 
 import scalacss.Defaults._
@@ -21,9 +22,21 @@ object ArticleCard {
 
     import dsl._
 
+    val articleCard = style("blaargh-article-card")(
+      mixin(BlaarghBootstrapCSS.Mixins.card),
+      &.hover(
+        BlaarghBootstrapCSS.Mixins.cardShadow,
+        BlaarghBootstrapCSS.Mixins.cardShadowAnimation
+      )
+    )
+
     val cardTitle = style("blaargh-card-title")(
       addClassName("card-title"),
-      cursor.pointer
+      color.black,
+      cursor.pointer,
+      &.hover(
+        textDecoration := "none"
+      )
     )
 
     val cardImage = style("blaargh-card-image")(
@@ -31,13 +44,31 @@ object ArticleCard {
       width(100.%%),
       cursor.pointer
     )
+
+    val author = style("blaargh-author")(
+      addClassName("author"),
+      cursor.pointer,
+      &.hover(
+        textDecoration := "none"
+      )
+    )
+
+    val date = style("blaargh-date")(
+      addClassName("date"),
+      cursor.pointer,
+      &.hover(
+        textDecoration := "none"
+      )
+    )
   }
 
   class Backend($: BackendScope[Props, Unit]) {
 
     def maybeTitle(props: Props)(content: TagMod => TagMod): TagMod =
       content(asOption(props.article.title).map(title =>
-        <.h4(Styles.cardTitle, ^.onClick --> openArticleCB(props), title)
+        <.a(Styles.cardTitle,
+          <.h4(^.onClick --> openArticleCB(props), title)
+        )
       ).getOrElse(EmptyTag))
 
     def maybeImage(props: Props) =
@@ -49,20 +80,22 @@ object ArticleCard {
 
 
     def render(props: Props) = {
-      <.div(^.className := "card",
+      <.div(Styles.articleCard,
         maybeImage(props).getOrElse(EmptyTag),
         maybeTitle(props)(title =>
-          <.div(^.className := "card-block",
+          <.div(BlaarghBootstrapCSS.cardBlock,
             title,
-            <.p(^.className := "card-text",
+            <.p(BlaarghBootstrapCSS.cardText,
               props.article.ingress
             ),
-            <.p(^.className := "card-text",
-              <.small(^.className := "text-muted",
+            <.p(BlaarghBootstrapCSS.cardText,
+              <.small(BlaarghBootstrapCSS.textMuted,
                 <.span("by "),
-                <.a(^.className := "author", props.article.author),
+                <.a(Styles.author, ^.onClick --> props.ctl.byPath.set(Filter(FilterCriteria("author", props.article.author)).asPath),
+                  props.article.author
+                ),
                 <.span(s" on "),
-                <.a(^.className := "date", s"${props.article.asJsDate.toDateString()}")
+                <.a(Styles.date, s"${props.article.asJsDate.toDateString()}")
               )
             ),
             if (props.article.labels.nonEmpty) <.span(props.article.labels.map(l => Label(l, props.ctl)))
