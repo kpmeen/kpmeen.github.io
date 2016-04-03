@@ -31,18 +31,17 @@ object SearchResultsPage {
       )
 
     def render(props: Props, state: State) =
-      <.div(^.className := "container-fluid",
+      <.div(BlaarghBootstrapCSS.containerFluid,
         <.p(
           <.b(^.marginRight := "1.1rem", "Showing results for:"),
           <.span(BlaarghBootstrapCSS.labelDefault, props.fc.value)
         ),
-        <.div(^.className := "card-columns",
+        <.div(BlaarghBootstrapCSS.cardCols,
           props.fc.field match {
             case "author" =>
               state.allArticles.filter(_.author == props.fc.value).map(a => ArticleCard(a, props.ctl))
             case "label" =>
               state.allArticles.filter(_.labels.contains(props.fc.value)).map(a => ArticleCard(a, props.ctl))
-
             case _ =>
               EmptyTag
           }
