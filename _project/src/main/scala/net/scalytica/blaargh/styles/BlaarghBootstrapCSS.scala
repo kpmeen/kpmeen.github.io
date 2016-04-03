@@ -13,8 +13,10 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
 
   object Mixins {
     val container = mixin(addClassName("container"))
+    val containerFluid = mixin(addClassName("container-fluid"))
     val row = mixin(addClassName("row"))
     val card = mixin(addClassName("card"))
+    val cardCols = mixin(addClassName("card-columns"))
     val cardBlock = mixin(addClassName("card-block"))
     val cardTitle = mixin(addClassName("card-title"))
     val cardText = mixin(addClassName("card-text"))
@@ -31,10 +33,19 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
       boxShadow := "5px 5px 30px -12px rgba(125,125,125,1)"
     )
 
-    val cardShadowAnimation = mixin(
-      transitionProperty := "box-shadow",
+    val easeOutAnimation = mixin(
       transitionDuration(0.4 seconds),
       transitionTimingFunction.easeOut
+    )
+
+    val easeInAnimation = mixin(
+      transitionDuration(0.4 seconds),
+      transitionTimingFunction.easeIn
+    )
+
+    val easeInOutAnimation = mixin(
+      transitionDuration(0.4 seconds),
+      transitionTimingFunction.easeInOut
     )
   }
 
@@ -82,10 +93,28 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
     height(100.%%)
   )
 
+  val author = style("blaargh-author")(
+    addClassName("author"),
+    cursor.pointer,
+    &.hover(
+      textDecoration := "none"
+    )
+  )
+
+  val date = style("blaargh-date")(
+    addClassName("date"),
+    cursor.pointer,
+    &.hover(
+      textDecoration := "none"
+    )
+  )
+
   val container = style("blaargh-container")(Mixins.container)
+  val containerFluid = style("blaargh-container-fluid")(Mixins.containerFluid)
   val row = style("blaargh-row")(Mixins.row)
   val col = styleF.int(1 to 12)(size => addClassName(s"col-xs-$size"))
   val card = style("blaargh-card")(Mixins.card)
+  val cardCols = style("blaargh-card-columns")(Mixins.cardCols)
   val cardBlock = style("blaargh-card-block")(Mixins.cardBlock)
   val cardTitle = style("blaargh-card-title")(Mixins.cardTitle)
   val cardText = style("blaargh-card-text")(Mixins.cardText)

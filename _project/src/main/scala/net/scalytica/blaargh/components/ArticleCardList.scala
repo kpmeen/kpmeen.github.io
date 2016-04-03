@@ -8,6 +8,8 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.models.Article
 import net.scalytica.blaargh.pages.Views.View
+import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
+import scalacss.ScalaCssReact._
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
@@ -26,10 +28,8 @@ object ArticleCardList {
       )
 
     def render(props: Props, state: State) =
-      <.div(^.className := "container-fluid",
-        <.div(^.className := "card-columns",
-          state.articles.map(a => ArticleCard(a, props.ctl))
-        )
+      <.div(BlaarghBootstrapCSS.cardCols,
+        state.articles.map(a => ArticleCard(a, props.ctl))
       )
   }
 

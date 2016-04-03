@@ -24,13 +24,15 @@ object ArticleCard {
 
     val articleCard = style("blaargh-article-card")(
       mixin(BlaarghBootstrapCSS.Mixins.card),
+      marginRight(0.75.rem),
+      transitionProperty := "box-shadow",
+      BlaarghBootstrapCSS.Mixins.easeInOutAnimation,
       &.hover(
-        BlaarghBootstrapCSS.Mixins.cardShadow,
-        BlaarghBootstrapCSS.Mixins.cardShadowAnimation
+        BlaarghBootstrapCSS.Mixins.cardShadow
       )
     )
 
-    val cardTitle = style("blaargh-card-title")(
+    val cardTitle = style("blaargh-article-card-title")(
       addClassName("card-title"),
       color.black,
       cursor.pointer,
@@ -39,27 +41,12 @@ object ArticleCard {
       )
     )
 
-    val cardImage = style("blaargh-card-image")(
+    val cardImage = style("blaargh-article-card-image")(
       addClassName("card-img-top"),
       width(100.%%),
       cursor.pointer
     )
 
-    val author = style("blaargh-author")(
-      addClassName("author"),
-      cursor.pointer,
-      &.hover(
-        textDecoration := "none"
-      )
-    )
-
-    val date = style("blaargh-date")(
-      addClassName("date"),
-      cursor.pointer,
-      &.hover(
-        textDecoration := "none"
-      )
-    )
   }
 
   class Backend($: BackendScope[Props, Unit]) {
@@ -91,11 +78,13 @@ object ArticleCard {
             <.p(BlaarghBootstrapCSS.cardText,
               <.small(BlaarghBootstrapCSS.textMuted,
                 <.span("by "),
-                <.a(Styles.author, ^.onClick --> props.ctl.byPath.set(Filter(FilterCriteria("author", props.article.author)).asPath),
+                <.a(
+                  BlaarghBootstrapCSS.author,
+                  ^.onClick --> props.ctl.byPath.set(Filter(FilterCriteria("author", props.article.author)).asPath),
                   props.article.author
                 ),
                 <.span(s" on "),
-                <.a(Styles.date, s"${props.article.asJsDate.toDateString()}")
+                <.a(BlaarghBootstrapCSS.date, s"${props.article.asJsDate.toDateString()}")
               )
             ),
             if (props.article.labels.nonEmpty) <.span(props.article.labels.map(l => Label(l, props.ctl)))

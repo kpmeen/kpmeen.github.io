@@ -29,10 +29,12 @@ object ArticleView {
     )
 
     val code = style("blaargh-code")(
-      backgroundColor.whitesmoke,
       marginRight(10.px),
       marginLeft(10.px),
-      BlaarghBootstrapCSS.Mixins.cardShadow
+      BlaarghBootstrapCSS.Mixins.cardShadow,
+      unsafeChild("code")(
+        backgroundColor.whitesmoke
+      )
     )
   }
 
@@ -56,10 +58,10 @@ object ArticleView {
       s.content.foreach { _ =>
         val elems = document.getElementsByTagName("code")
         for (i <- 0 to elems.length) {
-          elems(i).domAsHtml.classList.add("blaargh-code")
-          elems(i).domAsHtml.classList.add("card")
           Option(elems(i).parentNode).foreach { parent =>
             if (parent.nodeName.equalsIgnoreCase("pre")) {
+              parent.domAsHtml.classList.add("blaargh-code")
+              parent.domAsHtml.classList.add("card")
               global.hljs.highlightBlock(elems(i))
             }
           }

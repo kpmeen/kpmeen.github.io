@@ -5,7 +5,6 @@ package net.scalytica.blaargh.pages
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.components.ArticleCardList
 import net.scalytica.blaargh.pages.Views.View
 
@@ -16,11 +15,7 @@ object HomePage {
 
   val component = ReactComponentB[Props]("Home")
     .initialState_P(p => p)
-    .render { $ =>
-      <.div(^.className := "container-fluid",
-        ArticleCardList($.props.ctl)
-      )
-    }
+    .render($ => ArticleCardList($.props.ctl))
     .build
 
 
