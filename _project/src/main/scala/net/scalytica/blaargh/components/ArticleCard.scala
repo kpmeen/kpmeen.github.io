@@ -8,6 +8,7 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.models.Article
 import net.scalytica.blaargh.pages.Views.{Posts, View}
+import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import net.scalytica.blaargh.utils.StringUtils._
 
 import scalacss.Defaults._
@@ -21,9 +22,21 @@ object ArticleCard {
 
     import dsl._
 
+    val articleCard = style("blaargh-article-card")(
+      mixin(BlaarghBootstrapCSS.Mixins.card),
+      &.hover(
+        BlaarghBootstrapCSS.Mixins.cardShadow,
+        BlaarghBootstrapCSS.Mixins.cardShadowAnimation
+      )
+    )
+
     val cardTitle = style("blaargh-card-title")(
       addClassName("card-title"),
-      cursor.pointer
+      color.black,
+      cursor.pointer,
+      &.hover(
+        textDecoration := "none"
+      )
     )
 
     val cardImage = style("blaargh-card-image")(
@@ -37,7 +50,9 @@ object ArticleCard {
 
     def maybeTitle(props: Props)(content: TagMod => TagMod): TagMod =
       content(asOption(props.article.title).map(title =>
-        <.h4(Styles.cardTitle, ^.onClick --> openArticleCB(props), title)
+        <.a(Styles.cardTitle,
+          <.h4(^.onClick --> openArticleCB(props), title)
+        )
       ).getOrElse(EmptyTag))
 
     def maybeImage(props: Props) =
@@ -49,7 +64,7 @@ object ArticleCard {
 
 
     def render(props: Props) = {
-      <.div(^.className := "card",
+      <.div(Styles.articleCard,
         maybeImage(props).getOrElse(EmptyTag),
         maybeTitle(props)(title =>
           <.div(^.className := "card-block",

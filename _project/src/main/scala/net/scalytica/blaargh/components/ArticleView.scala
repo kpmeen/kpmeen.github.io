@@ -27,6 +27,13 @@ object ArticleView {
     val post = style("blaargh-post")(
       paddingBottom(5.rem)
     )
+
+    val code = style("blaargh-code")(
+      backgroundColor.whitesmoke,
+      marginRight(10.px),
+      marginLeft(10.px),
+      BlaarghBootstrapCSS.Mixins.cardShadow
+    )
   }
 
   case class Props(article: Future[Option[Article]], ref: ArticleRef, ctl: RouterCtl[ArticleRef])
@@ -49,6 +56,8 @@ object ArticleView {
       s.content.foreach { _ =>
         val elems = document.getElementsByTagName("code")
         for (i <- 0 to elems.length) {
+          elems(i).domAsHtml.classList.add("blaargh-code")
+          elems(i).domAsHtml.classList.add("card")
           Option(elems(i).parentNode).foreach { parent =>
             if (parent.nodeName.equalsIgnoreCase("pre")) {
               global.hljs.highlightBlock(elems(i))
