@@ -7,7 +7,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.models.Article
-import net.scalytica.blaargh.pages.Views.{Posts, View}
+import net.scalytica.blaargh.pages.Views.{Filter, FilterCriteria, Posts, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import net.scalytica.blaargh.utils.StringUtils._
 
@@ -44,6 +44,22 @@ object ArticleCard {
       width(100.%%),
       cursor.pointer
     )
+
+    val author = style("blaargh-author")(
+      addClassName("author"),
+      cursor.pointer,
+      &.hover(
+        textDecoration := "none"
+      )
+    )
+
+    val date = style("blaargh-date")(
+      addClassName("date"),
+      cursor.pointer,
+      &.hover(
+        textDecoration := "none"
+      )
+    )
   }
 
   class Backend($: BackendScope[Props, Unit]) {
@@ -67,17 +83,19 @@ object ArticleCard {
       <.div(Styles.articleCard,
         maybeImage(props).getOrElse(EmptyTag),
         maybeTitle(props)(title =>
-          <.div(^.className := "card-block",
+          <.div(BlaarghBootstrapCSS.cardBlock,
             title,
-            <.p(^.className := "card-text",
+            <.p(BlaarghBootstrapCSS.cardText,
               props.article.ingress
             ),
-            <.p(^.className := "card-text",
-              <.small(^.className := "text-muted",
+            <.p(BlaarghBootstrapCSS.cardText,
+              <.small(BlaarghBootstrapCSS.textMuted,
                 <.span("by "),
-                <.a(^.className := "author", props.article.author),
+                <.a(Styles.author, ^.onClick --> props.ctl.byPath.set(Filter(FilterCriteria("author", props.article.author)).asPath),
+                  props.article.author
+                ),
                 <.span(s" on "),
-                <.a(^.className := "date", s"${props.article.asJsDate.toDateString()}")
+                <.a(Styles.date, s"${props.article.asJsDate.toDateString()}")
               )
             ),
             if (props.article.labels.nonEmpty) <.span(props.article.labels.map(l => Label(l, props.ctl)))

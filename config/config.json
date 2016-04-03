@@ -4,6 +4,10 @@
     {
       "name": "John Doe",
       "email": "john@mailinator.com"
+    },
+    {
+      "name": "Jane Doe",
+      "email": "jane@mailinator.com"
     }
   ],
   "owner": {

@@ -1,6 +1,6 @@
 ---
 title: Lorem Ipsum
-author: John Doe
+author: Jane Doe
 date: 2015-12-13
 ingress: Lorem markdownum nunc fuerat parvos utque subdita resistite ipsius trementes iacet, ignes sed illa. Ambage me feror
 ---
