@@ -22,11 +22,6 @@ object Navbar {
 
     import dsl._
 
-    val transitionMixin = mixin(
-      transitionDuration(0.4 seconds),
-      transitionTimingFunction.easeOut
-    )
-
     val blaarghBrand = style("blaargh-brand")(
       addClassName("navbar-brand"),
       marginRight(10.rem)
@@ -64,7 +59,7 @@ object Navbar {
         zIndex(14),
         boxShadow := "1px 2px, 8px lightgrey",
         transitionProperty := "background-color, color",
-        transitionMixin
+        BlaarghBootstrapCSS.Mixins.easeOutAnimation
       )
     }
   }

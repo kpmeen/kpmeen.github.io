@@ -34,23 +34,22 @@ object AboutPage {
 
     val centeredAvatar = style("blaarg-profile-avatar")(
       BlaarghBootstrapCSS.Mixins.imgCircle,
-      BlaarghBootstrapCSS.Mixins.centerBlock
+      BlaarghBootstrapCSS.Mixins.centerBlock,
+      height(120.px)
     )
 
     val authorSocial = style("blaargh-author-social")(
-      //      display.block,
       fontSize(1.2.em),
       marginBottom(5.px),
       color.black,
       unsafeChild(".fa")(
         marginRight(5.px)
+      ),
+      transitionProperty := "font-size",
+      BlaarghBootstrapCSS.Mixins.easeOutAnimation,
+      &.hover(
+        fontSize(1.5.em)
       )
-      /*
-        @include font-rem(14);
-        &:hover {
-          @include scale(1.1);
-        }
-       */
     )
   }
 
@@ -88,7 +87,6 @@ object AboutPage {
             <.div(Styles.profileCard,
               <.img(
                 Styles.centeredAvatar,
-                ^.height := "120px",
                 ^.src := StringUtils.asOption(state.conf.owner.avatar).getOrElse("assets/images/default_avatar.png")
               ),
               <.div(BlaarghBootstrapCSS.cardBlock,
