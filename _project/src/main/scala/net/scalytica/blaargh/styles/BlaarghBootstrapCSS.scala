@@ -30,7 +30,7 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
     val labelInfo = mixin(addClassNames("label", "label-info"))
 
     val cardShadow = mixin(
-      boxShadow := "5px 5px 10px 0px rgba(173,173,173,0.6)"
+      boxShadow := "3px 3px 6px 0px rgba(173,173,173,0.6)"
     )
 
     val easeOutAnimation = mixin(
