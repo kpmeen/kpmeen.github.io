@@ -25,6 +25,7 @@ object ArticleCard {
     val articleCard = style("blaargh-article-card")(
       mixin(BlaarghBootstrapCSS.Mixins.card),
       marginRight(0.75.rem),
+      marginTop(0.75.rem),
       transitionProperty := "box-shadow",
       BlaarghBootstrapCSS.Mixins.easeInOutAnimation,
       &.hover(
