@@ -1,5 +1,14 @@
 [
   {
+    "date": "2016-04-04",
+    "author": "Knut Petter Meen",
+    "title": "Blaargh!",
+    "ingress": "A scalajs-react based blog template for GitHub Pages.",
+    "labels": ["scala-js","scalajs-react","template"],
+    "filename": "Blaargh",
+    "image": "posts/BlaarghScreenShot.png"
+  },
+  {
     "date": "2014-09-13",
     "author": "Knut Petter Meen",
     "title": "Introducing ClammyScan",
