@@ -7,8 +7,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
 import net.scalytica.blaargh.models.Article
-import net.scalytica.blaargh.pages.Views.ArticleRef
-import net.scalytica.blaargh.pages.Views.View
+import net.scalytica.blaargh.pages.Views.{ArticleRef, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import org.scalajs.dom.document
 
