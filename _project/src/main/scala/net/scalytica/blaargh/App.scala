@@ -6,7 +6,7 @@ package net.scalytica.blaargh
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router._
 import japgolly.scalajs.react.vdom.prefix_<^._
-import net.scalytica.blaargh.components.{ArticleView, Footer, HeaderSVG, Navbar}
+import net.scalytica.blaargh.components._
 import net.scalytica.blaargh.models.{Article, Config}
 import net.scalytica.blaargh.pages.Views._
 import net.scalytica.blaargh.pages._
@@ -14,7 +14,7 @@ import net.scalytica.blaargh.styles.{BlaarghBootstrapCSS, CSSRegistry}
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-import scala.scalajs.js.JSApp
+import scala.scalajs.js._
 import scala.scalajs.js.annotation.JSExport
 import scalacss.ScalaCssReact._
 
@@ -69,26 +69,30 @@ object App extends JSApp {
 
   object BlaarghLayout {
 
-    val component = ReactComponentB[Props]("BlaarghLayout")
-      .initialState_P(p => State(Config.empty, p.ctl, p.r))
-      .renderBackend[Backend]
-      .componentWillMount(_.backend.init)
-      .build
-
-    def apply(conf: Future[Config], ctl: RouterCtl[View], r: Resolution[View]) = component(Props(conf, ctl, r))
-
     case class Props(futureConf: Future[Config], ctl: RouterCtl[View], r: Resolution[View])
 
-    case class State(conf: Config, ctl: RouterCtl[View], r: Resolution[View])
+    case class State(conf: Config)
 
     class Backend($: BackendScope[Props, State]) {
+      val ga = Dynamic.global.ga
+
       def init: Callback = {
-        $.props.map(p =>
+        $.props.map { p =>
           Callback.future[Unit] {
-            p.futureConf.map(c => $.modState(_.copy(conf = c)))
+            p.futureConf.map { c =>
+              ga("create", c.owner.googleAnalytics, "auto")
+              ga("send", "pageview")
+              $.modState(_.copy(conf = c))
+            }
           }.runNow()
-        )
+        }
       }
+
+      def feedAnalytics(props: Props): Callback =
+        Callback {
+          ga("set", "page", props.ctl.pathFor(props.r.page).value)
+          ga("send", "pageview")
+        }
 
       def render(props: Props, state: State) = {
         <.div(BlaarghBootstrapCSS.box)(
@@ -111,6 +115,16 @@ object App extends JSApp {
         )
       }
     }
+
+    val component = ReactComponentB[Props]("BlaarghLayout")
+      .initialState_P(p => State(Config.empty))
+      .renderBackend[Backend]
+      .componentWillMount(_.backend.init)
+      .componentWillReceiveProps(ctx => ctx.$.backend.feedAnalytics(ctx.nextProps))
+      .build
+
+    def apply(conf: Future[Config], ctl: RouterCtl[View], r: Resolution[View]) =
+      component(Props(conf, ctl, r))
 
   }
 

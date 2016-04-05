@@ -12,7 +12,6 @@ import net.scalytica.blaargh.pages.Views.{About, Home, Posts, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import org.scalajs.dom
 
-import scala.concurrent.duration._
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
 

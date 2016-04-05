@@ -4,10 +4,6 @@
     {
       "name": "Knut Petter Meen",
       "email": "kp@scalytica.net"
-    },
-    {
-      "name": "Jane Doe",
-      "email": "jane@mailinator.com"
     }
   ],
   "owner": {
@@ -17,7 +13,7 @@
     "email": "kp@scalytica.net",
     "disqusShortname": "scalytica",
     "twitter": "KnutPMeen",
-    "googleAnalytics": "UA-35636560-1",
+    "googleAnalytics": "UA-35636560-2",
     "github": "kpmeen"
   }
 }
