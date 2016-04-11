@@ -28,8 +28,8 @@ scalaJSStage in Global := FastOptStage
 updateOptions := updateOptions.value.withCachedResolution(true)
 
 // Dependency management...
-val scalaJSReactVersion = "0.10.4"
-val scalaCssVersion = "0.4.0"
+val scalaJSReactVersion = "0.11.0"
+val scalaCssVersion = "0.4.1"
 val scalazVersion = "7.1.2"
 val monocleVersion = "1.2.0"
 
@@ -58,11 +58,12 @@ libraryDependencies ++= Seq(
 initialCommands in (Test, console) := """ammonite.repl.Main.run("")"""
 
 
-val reactJSVersion = "0.14.3"
+val reactJSVersion = "15.0.1"
 
 jsDependencies ++= Seq(
   "org.webjars.bower" % "react" % reactJSVersion / "react-with-addons.js" minified "react-with-addons.min.js" commonJSName "React",
-  "org.webjars.bower" % "react" % reactJSVersion / "react-dom.js" minified  "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM"
+  "org.webjars.bower" % "react" % reactJSVersion / "react-dom.js" minified "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM",
+  "org.webjars.bower" % "react" % reactJSVersion / "react-dom-server.js" minified "react-dom-server.min.js" dependsOn "react-dom.js" commonJSName "ReactDOMServer"
 )
 
 // creates single js resource file for easy integration in html page

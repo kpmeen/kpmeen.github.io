@@ -4,6 +4,7 @@
 package net.scalytica.blaargh.models
 
 import net.scalytica.blaargh.pages.Views.ArticleRef
+import net.scalytica.blaargh.utils.RuntimeConfig
 import org.scalajs.dom.ext.Ajax
 import upickle.default._
 
@@ -45,7 +46,7 @@ object Article {
 
   def fetchAll: Future[Seq[Article]] =
     Ajax.get(
-      url = "posts/posts.json",
+      url = s"${RuntimeConfig.baseUrl.value}posts/posts.json",
       headers = Map(
         "Accept" -> "application/json",
         "Content-Type" -> "application/json"
