@@ -1,10 +1,31 @@
 load.module(ammonite.ops.cwd/"frontmatter.scala")
+load.module(ammonite.ops.cwd/"common.scala")
 @
 import ammonite.ops._
 import scala.util.Try
 import javax.swing._, java.awt._, java.awt.event._
+import javax.swing.filechooser.FileFilter
 
 object CreateFrame {
+
+  class ImageFilter extends FileFilter {
+    val imgFormats = Seq("tiff", "tif", "jpeg", "jpg", "gif", "png", "svg")
+
+    def getExtension(f: java.io.File): Option[String] =
+      Option(f.getName).flatMap { s =>
+        val idx = s.lastIndexOf('.')
+        if (idx > 0 && idx < s.length -1)
+          Option(s.substring(idx+1).toLowerCase())
+        else None
+      }
+
+    //Accept all directories and all gif, jpg, tiff, or png files.
+    def accept(f: java.io.File): Boolean =
+      if (f.isDirectory) true else getExtension(f).exists(imgFormats.contains)
+
+    //The description of this filter
+    def getDescription = "Just Images"
+  }
 
   val frame = new JFrame("New Article")
 
@@ -18,14 +39,16 @@ object CreateFrame {
   val txtAuthor = new JTextField(50)
   val txtIngress = new JTextArea(5, 40)
   val txtLabels = new JTextField(50)
-  val txtImage = new JTextField(50) // Use https://docs.oracle.com/javase/7/docs/api/javax/swing/JFileChooser.html
+  val fileImage = new JFileChooser("/")
+  fileImage.addChoosableFileFilter(new ImageFilter())
+  fileImage.setAcceptAllFileFilterUsed(false)
 
   val labelsFields = Seq(
     (labelTitle, txtTitle),
     (labelAuthor, txtAuthor),
     (labelIngress, txtIngress),
     (labelLabels, txtLabels),
-    (labelImage, txtImage)
+    (labelImage, fileImage)
   )
 
   def build() = {
@@ -47,8 +70,10 @@ object CreateFrame {
 
     val doneButton = new JButton("Create")
     doneButton.addActionListener(new ActionListener {
-      def actionPerformed(e: ActionEvent) =
-         handleDoneButton(e)
+      def actionPerformed(e: ActionEvent) = {
+        handleDoneButton(e)
+        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING))
+      }
     })
     val cancelButton = new JButton("Cancel")
     cancelButton.addActionListener(new ActionListener {
@@ -78,16 +103,25 @@ object CreateFrame {
   }
 
   def handleDoneButton(e: ActionEvent) = {
+    val maybeFileName = Option(fileImage.getSelectedFile).map { f =>
+      val destFile = postsFolder / f.getName
+      cp(Path(f), destFile)
+      f.getName
+    }
+
     val fm = FrontMatter(
       title = txtTitle.getText,
       author = txtAuthor.getText,
       date = Some(new java.util.Date()),
       ingress = Option(txtIngress.getText),
       labels = None,
-      image = Option(txtImage.getText),
+      image = maybeFileName,
       misc = Map.empty[String, Any]
     )
-    println(fm)
+    write(
+      postsFolder / s"${fm.title.replaceAll(" ", "_")}.md",
+      fm.toYaml
+    )
   }
 
 }

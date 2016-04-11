@@ -13,7 +13,7 @@ object GoogleSearchBox {
   class Backend($: BackendScope[Unit, Unit]) {
 
     def scriptGen() = {
-      val cx = "007449460818485879211:gh85e-b7vzq"
+      val cx = "007449460818485879211:oyngikjfvr0"
       val googleScript = {
         val scr = document.createElement("script")
         scr.setAttribute("type", "text/javascript")
