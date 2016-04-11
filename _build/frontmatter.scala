@@ -1,10 +1,9 @@
 load.ivy("org.yaml" % "snakeyaml" % "1.17")
+load.module(ammonite.ops.cwd/"common.scala")
 @
 import org.yaml.snakeyaml.Yaml
 import scala.collection.JavaConverters._
 import scala.collection.Map
-
-val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
 
 case class FrontMatter(
   title: String,
