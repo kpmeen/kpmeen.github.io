@@ -53,11 +53,13 @@ object ArticleCard {
   class Backend($: BackendScope[Props, Unit]) {
 
     def maybeTitle(props: Props)(content: TagMod => TagMod): TagMod =
-      content(asOption(props.article.title).map(title =>
-        <.a(Styles.cardTitle,
-          <.h4(^.onClick --> openArticleCB(props), title)
+      asOption(props.article.title).map(title =>
+        content(
+          <.a(Styles.cardTitle,
+            <.h4(^.onClick --> openArticleCB(props), title)
+          )
         )
-      ).getOrElse(EmptyTag))
+      ).getOrElse(EmptyTag)
 
     def maybeImage(props: Props) =
       asOption(props.article.image).map(image =>
