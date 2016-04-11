@@ -39,16 +39,31 @@ object CreateFrame {
   val txtAuthor = new JTextField(50)
   val txtIngress = new JTextArea(5, 40)
   val txtLabels = new JTextField(50)
+
+  // =====  FileChooser stuff =====
+  val labelSelectedFile = new JLabel("Selected file: ")
+  val selectedFile = new JLabel("No file selected.")
   val fileImage = new JFileChooser("/")
   fileImage.addChoosableFileFilter(new ImageFilter())
   fileImage.setAcceptAllFileFilterUsed(false)
 
+  val addImageBtn = new JButton("Add Image")
+  addImageBtn.addActionListener(new ActionListener {
+    def actionPerformed(e: ActionEvent) = {
+      val res = fileImage.showOpenDialog(frame)
+      if (res == JFileChooser.APPROVE_OPTION)
+        selectedFile.setText(Option(fileImage.getSelectedFile.getName).getOrElse(""))
+    }
+  })
+
+  // =====  Labels and Fields =====
   val labelsFields = Seq(
     (labelTitle, txtTitle),
     (labelAuthor, txtAuthor),
     (labelIngress, txtIngress),
     (labelLabels, txtLabels),
-    (labelImage, fileImage)
+    (labelImage, addImageBtn),
+    (labelSelectedFile, selectedFile)
   )
 
   def build() = {
@@ -91,7 +106,7 @@ object CreateFrame {
     btnPanel.add(doneButton, btnConstraints)
 
     constraints.gridx = 0
-    constraints.gridy = labelsFields.length
+    constraints.gridy = labelsFields.length + 1
     constraints.gridwidth = 2;
     constraints.anchor = GridBagConstraints.CENTER
     inputPanel.add(btnPanel, constraints)
@@ -114,7 +129,7 @@ object CreateFrame {
       author = txtAuthor.getText,
       date = Some(new java.util.Date()),
       ingress = Option(txtIngress.getText),
-      labels = None,
+      labels = Option(txtLabels.getText).map[Seq[String]](_.split(",").map(_.trim()).toSeq),
       image = maybeFileName,
       misc = Map.empty[String, Any]
     )
