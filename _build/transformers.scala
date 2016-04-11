@@ -1,12 +1,17 @@
 load.ivy("org.pegdown" % "pegdown" % "1.6.0")
+load.ivy("org.yaml" % "snakeyaml" % "1.17")
 load.module(ammonite.ops.cwd/"frontmatter.scala")
-load.module(ammonite.ops.cwd/"paths.scala")
+load.module(ammonite.ops.cwd/"common.scala")
 @
 import ammonite.ops._
 import org.pegdown.ast.{HeaderNode, SimpleNode, TableNode, TextNode, VerbatimNode}
 import org.pegdown.{Extensions, LinkRenderer, PegDownProcessor, ToHtmlSerializer}
+import org.yaml.snakeyaml.Yaml
 import scala.collection.JavaConverters._
 import scala.collection.Map
+
+val yaml = new Yaml
+lazy val conf = yaml.load(read! configFile).asInstanceOf[java.util.Map[String, Any]].asScala
 
 class BlaarghSerializer extends ToHtmlSerializer(new LinkRenderer) {
   override def printImageTag(rendering: LinkRenderer.Rendering) {
@@ -103,6 +108,29 @@ object BlaarghParser {
   }
 }
 
+object SitemapBuilder {
+  import scala.xml._
+
+  lazy val baseUrl = conf.getOrElse("url", "http://localhost")
+
+  private def page(url: String) = {
+    <url>
+      <loc>{baseUrl + "/" + url}</loc>
+      <priority>.5</priority>
+      <changefreq>weekly</changefreq>
+    </url>
+  }
+
+  def build(pages: Seq[(String, String)]) = {
+    val root = <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>
+    val children = Seq.newBuilder[Node]
+    children += page("")
+    children += page("#about")
+    pages.foreach(p => children += page("#posts/" + p._1 + "/" + p._2))
+    root.copy(child = children.result())
+  }
+}
+
 object BlaarghWriter {
   val (pfMdFiles, pfOtherFiles) = ls ! postsFolder partition (_.ext == "md")
   val entries = BlaarghParser.parse(pfMdFiles, pfOtherFiles)
@@ -116,10 +144,13 @@ object BlaarghWriter {
     rm ! pagesTargetFolder
     mkdir ! pagesTargetFolder
 
+    rm ! baseFolder / "sitemap.xml"
+
     for (of <- pgsOtherFiles) {
       cp(of, pagesTargetFolder / (of relativeTo pagesFolder))
     }
 
+    println("Generating html files from _pages...")
     for ((name, rawHtmlContent, _) <- pages) {
       write(
         pagesTargetFolder / s"${name.replaceAll(" ", "_")}.html",
@@ -132,11 +163,26 @@ object BlaarghWriter {
     }
 
     // Build and write the json file containing all blog article metadata.
+    println("Generating posts/posts.json...")
     val json: String = entries.map(e => FrontMatter.toJsonString(e._1, e._2)).mkString("[\n", ",\n", "\n]\n")
     write(
       postsTargetFolder / "posts.json",
       json
     )
+
+    val sb = SitemapBuilder.build(
+      entries.map {
+        case (name, fm, _, _) => (dateFormat.format(fm.date.get), name.replaceAll(" ", "_"))
+      }
+    )
+
+    println("Generating sitemap.xml...")
+    write(
+      baseFolder / "sitemap.xml",
+      sb.mkString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n", "\n", "\n")
+    )
+
+    println("Generating html files from _posts...")
     for ((name, fm, rawHtmlContent, _) <- entries) {
       write(
         postsTargetFolder / s"${name.replaceAll(" ", "_")}.html",

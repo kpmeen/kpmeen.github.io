@@ -1,9 +1,8 @@
 load.module(ammonite.ops.cwd/"transformers.scala")
 load.module(ammonite.ops.cwd/"frontmatter.scala")
-load.module(ammonite.ops.cwd/"paths.scala")
+load.module(ammonite.ops.cwd/"common.scala")
 @
 import ammonite.ops._
-
 
 def main(postTitle: String = "") = {
   if (postTitle.isEmpty) {

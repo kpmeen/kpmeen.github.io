@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url>
+      <loc>http://scalytica.net/</loc>
+      <priority>.5</priority>
+      <changefreq>weekly</changefreq>
+    </url><url>
+      <loc>http://scalytica.net/#about</loc>
+      <priority>.5</priority>
+      <changefreq>weekly</changefreq>
+    </url><url>
+      <loc>http://scalytica.net/#posts/2016-04-04/Blaargh</loc>
+      <priority>.5</priority>
+      <changefreq>weekly</changefreq>
+    </url><url>
+      <loc>http://scalytica.net/#posts/2014-09-13/introducing-clammyscan</loc>
+      <priority>.5</priority>
+      <changefreq>weekly</changefreq>
+    </url><url>
+      <loc>http://scalytica.net/#posts/2015-03-29/playframework-reads-writes-of-parent-child-class-structure</loc>
+      <priority>.5</priority>
+      <changefreq>weekly</changefreq>
+    </url></urlset>
