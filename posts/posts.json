@@ -4,7 +4,7 @@
     "author": "Knut Petter Meen",
     "title": "Blaargh!",
     "ingress": "A scalajs-react based blog template for GitHub Pages.",
-    "labels": ["scala-js","scalajs-react","template"],
+    "labels": ["blaargh","scala-js","scalajs-react","template"],
     "filename": "Blaargh",
     "image": "posts/BlaarghScreenShot.png"
   },
@@ -25,5 +25,14 @@
     "labels": ["playframework","scala"],
     "filename": "playframework-reads-writes-of-parent-child-class-structure",
     "image": ""
+  },
+  {
+    "date": "2016-04-04",
+    "author": "Knut Petter Meen",
+    "title": "A new web site for my wife.",
+    "ingress": "My wife is an artist, childrens book author and fairy creature sculptor. And was in need of a new site to promote her work. Now she has one based on the Blaargh! template and scala-js.",
+    "labels": ["blaargh","scala-js","scalajs-react"],
+    "filename": "renslebraten",
+    "image": "posts/renslebraten-screen.png"
   }
 ]
