@@ -11,6 +11,7 @@ import net.scalytica.blaargh.models.{Article, Config}
 import net.scalytica.blaargh.pages.Views._
 import net.scalytica.blaargh.pages._
 import net.scalytica.blaargh.styles.{BlaarghBootstrapCSS, CSSRegistry}
+import net.scalytica.blaargh.utils.RuntimeConfig
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -45,21 +46,19 @@ object App extends JSApp {
     import dsl._
 
     (trimSlashes
-      | staticRoute("", Home) ~> renderR(ctl => HomePage(ctl))
-      | staticRoute("#about", About) ~> render(AboutPage(SiteConfig))
-      | staticRoute("#notfound", NotFound) ~> render(NotFoundPage())
-      | filterRule.prefixPath_/("#filter").pmap[View](Filter.apply) { case Filter(criteria) => criteria }
-      | postsRule.prefixPath_/("#posts").pmap[View](Posts.apply) { case Posts(ref) => ref }
+      | staticRoute(Home.basePath, Home) ~> renderR(ctl => HomePage(ctl))
+      | staticRoute(About.basePath, About) ~> render(AboutPage(SiteConfig))
+      | staticRoute(NotFound.basePath, NotFound) ~> render(NotFoundPage())
+      | filterRule.prefixPath_/(Filter.basePath).pmap[View](Filter.apply) { case Filter(criteria) => criteria }
+      | postsRule.prefixPath_/(Posts.basePath).pmap[View](Posts.apply) { case Posts(ref) => ref }
       )
       .notFound(nfp => redirectToPage(NotFound)(Redirect.Replace))
       .renderWith((ctl, r) => layout(ctl, r))
   }
-  val baseUrl = BaseUrl.until_#
-  val router = Router(baseUrl, routerConfig) //.logToConsole)
 
-  def layout(ctl: RouterCtl[View], r: Resolution[View]) = {
-    BlaarghLayout(SiteConfig, ctl, r)
-  }
+  val router = Router(RuntimeConfig.baseUrl, routerConfig) //.logToConsole)
+
+  def layout(ctl: RouterCtl[View], r: Resolution[View]) = BlaarghLayout(SiteConfig, ctl, r)
 
   @JSExport
   override def main(): Unit = {

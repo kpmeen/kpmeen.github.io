@@ -44,7 +44,7 @@ object ArticleView {
   class Backend($: BackendScope[Props, State]) {
 
     def init: Callback =
-      $.props.map(p =>
+      $.props.map[Unit](p =>
         for {
           metadata <- p.article
           content <- Article.get(p.ref)

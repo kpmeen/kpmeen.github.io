@@ -4,6 +4,7 @@
 package net.scalytica.blaargh.pages
 
 import japgolly.scalajs.react.extra.router.Path
+import net.scalytica.blaargh.utils.RuntimeConfig
 
 object Views {
 
@@ -18,19 +19,19 @@ object Views {
   }
 
   case object About extends View with ViewType {
-    override val basePath = "#about"
+    override val basePath = s"${RuntimeConfig.PathPrefix}about"
   }
 
   case object NotFound extends View with ViewType {
-    override val basePath = "#notfound"
+    override val basePath = s"${RuntimeConfig.PathPrefix}notfound"
   }
 
   case class Posts(ref: ArticleRef) extends View {
-    def asPath: Path = Path(s"#${ref.navigationPath}")
+    def asPath: Path = Path(ref.navigationPath)
   }
 
   object Posts extends ViewType {
-    override val basePath = "#posts"
+    override val basePath = s"${RuntimeConfig.PathPrefix}posts"
   }
 
   case class Filter(fc: FilterCriteria) extends View {
@@ -38,13 +39,13 @@ object Views {
   }
 
   object Filter extends ViewType {
-    override val basePath = "#filter"
+    override val basePath = s"${RuntimeConfig.PathPrefix}filter"
   }
 
   case class ArticleRef(date: String, filename: String) {
-    def htmlFilePath = s"posts/$filename.html"
+    def htmlFilePath = s"${RuntimeConfig.baseUrl.value}posts/$filename.html"
 
-    def navigationPath = s"posts/$date/$filename"
+    def navigationPath = s"${RuntimeConfig.PathPrefix}posts/$date/$filename"
   }
 
   case class FilterCriteria(field: String, value: String)

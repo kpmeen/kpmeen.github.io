@@ -23,7 +23,7 @@ object SearchResultsPage {
   class Backend($: BackendScope[Props, State]) {
 
     def init: Callback =
-      $.props.map(p =>
+      $.props.map[Unit](p =>
         Article.Articles.map { a =>
           // Set the state once and for all
           $.setState(State(a)).runNow()

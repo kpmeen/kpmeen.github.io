@@ -19,16 +19,16 @@ object NotFoundPage {
         "01110100", "00100000", "01100110", "01101111", "01110101", "01101110", "01100100"
       )
       <.div(BlaarghBootstrapCSS.container.compose(BlaarghBootstrapCSS.textXsCenter),
-        binaryPageNotFound.grouped(7).map(grp =>
-          <.h2(
-            grp.map(bin =>
+        binaryPageNotFound.grouped(7).zipWithIndex.map(grp =>
+          <.h2(^.key := s"${grp._2}_notfound",
+            grp._1.map(bin =>
               <.span(^.marginRight := "1.2rem", bin)
             )
           )
         )
       )
     }
-    .buildU
+    .build
 
   def apply() = component()
 }
