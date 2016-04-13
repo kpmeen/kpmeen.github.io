@@ -45,6 +45,7 @@ object AboutPage {
       unsafeChild(".fa")(
         marginRight(5.px)
       ),
+      lineHeight(47 px),
       transitionProperty := "font-size",
       BlaarghBootstrapCSS.Mixins.easeOutAnimation,
       &.hover(

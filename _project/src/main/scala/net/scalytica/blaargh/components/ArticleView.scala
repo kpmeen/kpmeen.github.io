@@ -24,7 +24,6 @@ object ArticleView {
     import dsl._
 
     val post = style("blaargh-post")(
-      paddingBottom(5.rem)
     )
 
     val code = style("blaargh-code")(
