@@ -50,32 +50,34 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
 
   val blaarghHeader = style("blaargh-header")(
     flex := "0 1 auto",
-    minHeight(20.em)
+    minHeight(20 em)
   )
 
   val blaarghHeaderSVGContainer = style(
-    minHeight(20.em),
+    minHeight(20 em),
     backgroundImage := "url(assets/images/banner.png)",
     backgroundSize := "contain",
     backgroundRepeat := "no-repeat",
     backgroundPosition := "center",
-    marginBottom(20.px),
-    width(100.%%),
-    left.`0`,
-    right.`0`
+    marginBottom(20 px),
+    width(100 %%),
+    left `0`,
+    right `0`
   )
 
   val blaarghSVGHeaderText = style(
     position.relative,
-    left.`0`,
-    width(100.%%),
-    height(10.em),
+    left `0`,
+    width(100 %%),
+    height(10 em),
     zIndex(10)
   )
 
   val blaarghContent = style("blaargh-content")(
     flex := "1 1 auto",
-    paddingTop(2.em)
+    paddingTop(2 em),
+    paddingBottom(5 rem),
+    marginBottom(5 rem)
   )
 
   val blaarghFooter = style("blaargh-footer")(
@@ -87,14 +89,14 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
   )
 
   val box = style("box")(
-    display.flex,
+    display flex,
     flexFlow := "column",
-    height(100.%%)
+    height(100 %%)
   )
 
   val author = style("blaargh-author")(
     addClassName("author"),
-    cursor.pointer,
+    cursor pointer,
     &.hover(
       textDecoration := "none"
     )
@@ -102,7 +104,7 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
 
   val date = style("blaargh-date")(
     addClassName("date"),
-    cursor.pointer,
+    cursor pointer,
     &.hover(
       textDecoration := "none"
     )
@@ -124,15 +126,15 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
   val textXsCenter = style("blaargh-text-xs-center")(Mixins.textXsCenter)
   val labelInfo = style("blaargh-label-info")(
     Mixins.labelInfo,
-    padding(.2.em),
-    marginLeft(.2.em),
-    marginRight(.2.em)
+    padding(.2 em),
+    marginLeft(.2 em),
+    marginRight(.2 em)
   )
   val labelDefault = style("blaargh-label-default")(
     Mixins.labelDefault,
-    padding(.2.em),
-    marginLeft(.2.em),
-    marginRight(.2.em)
+    padding(.2 em),
+    marginLeft(.2 em),
+    marginRight(.2 em)
   )
 
 }
