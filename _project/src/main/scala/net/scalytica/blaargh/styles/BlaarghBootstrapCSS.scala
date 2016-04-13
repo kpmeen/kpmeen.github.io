@@ -91,7 +91,7 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
   val box = style("box")(
     display flex,
     flexFlow := "column",
-    height(100 %%)
+    minHeight(100 vh)
   )
 
   val author = style("blaargh-author")(
