@@ -5,6 +5,8 @@ import org.yaml.snakeyaml.Yaml
 import scala.collection.JavaConverters._
 import scala.collection.Map
 
+val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
+
 case class FrontMatter(
   title: String,
   author: String,

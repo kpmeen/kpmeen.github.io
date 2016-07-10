@@ -9,6 +9,15 @@
     "image": "posts/BlaarghScreenShot.png"
   },
   {
+    "date": "2016-07-10",
+    "author": "Knut Petter Meen",
+    "title": "ClammyScan version 1.0.8",
+    "ingress": "A new and re-written version (1.0.8) of ClammyScan is available. To be compliant with play 2.5.x it is now based on the akka-stream library.",
+    "labels": ["playframework","akka","akka-stream"],
+    "filename": "ClammyScan_version_1.0.8",
+    "image": ""
+  },
+  {
     "date": "2014-09-13",
     "author": "Knut Petter Meen",
     "title": "Introducing ClammyScan",

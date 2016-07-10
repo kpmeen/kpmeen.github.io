@@ -11,4 +11,3 @@ val pagesTargetFolder = baseFolder / 'pages
 
 val configFile = baseFolder / "config" / "config.json"
 
-val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
