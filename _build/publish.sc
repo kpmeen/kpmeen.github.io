@@ -1,9 +1,10 @@
-load.module(ammonite.ops.cwd/"transformers.scala")
-load.module(ammonite.ops.cwd/"frontmatter.scala")
-load.module(ammonite.ops.cwd/"common.scala")
 @
+import $file.common, common._
+import $file.transformers, transformers._
+import $file.frontmatter, frontmatter._
 import ammonite.ops._
 
+@main
 def main(postTitle: String = "") = {
   if (postTitle.isEmpty) {
     BlaarghWriter.generate()

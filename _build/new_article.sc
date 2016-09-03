@@ -1,6 +1,6 @@
-load.module(ammonite.ops.cwd/"frontmatter.scala")
-load.module(ammonite.ops.cwd/"common.scala")
 @
+import $file.common, common._
+import $file.frontmatter, frontmatter._
 import ammonite.ops._
 import scala.util.Try
 import javax.swing._, java.awt._, java.awt.event._
@@ -141,16 +141,15 @@ object CreateFrame {
 
 }
 
-def main() {
-  Try {
-    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-  }.recover {
-    case ex: Exception => ex.printStackTrace()
-  }
 
-  SwingUtilities.invokeLater(new Runnable() {
-    def run(): Unit = {
-      CreateFrame.build()
-    }
-  })
+Try {
+  UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+}.recover {
+  case ex: Exception => ex.printStackTrace()
 }
+
+SwingUtilities.invokeLater(new Runnable() {
+  def run(): Unit = {
+    CreateFrame.build()
+  }
+})

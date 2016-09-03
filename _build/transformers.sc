@@ -1,8 +1,9 @@
-load.ivy("org.pegdown" % "pegdown" % "1.6.0")
-load.ivy("org.yaml" % "snakeyaml" % "1.17")
-load.module(ammonite.ops.cwd/"frontmatter.scala")
-load.module(ammonite.ops.cwd/"common.scala")
-@
+import $file.common, common._
+import $file.frontmatter, frontmatter._
+
+import $ivy.`org.yaml:snakeyaml:1.17`
+import $ivy.`org.pegdown:pegdown:1.6.0`
+
 import ammonite.ops._
 import org.pegdown.ast.{HeaderNode, SimpleNode, TableNode, TextNode, VerbatimNode}
 import org.pegdown.{Extensions, LinkRenderer, PegDownProcessor, ToHtmlSerializer}

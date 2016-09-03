@@ -6,7 +6,7 @@ A [scalajs-react](https://github.com/japgolly/scalajs-react) and [bootstrap v4 (
 
 * JDK 8
 * [SBT](http://www.scala-sbt.org)
-* [Ammonite](http://www.lihaoyi.com/Ammonite/)
+* [Ammonite 0.7.6](http://www.lihaoyi.com/Ammonite/)
 
 ## Customising
 

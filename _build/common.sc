@@ -1,4 +1,4 @@
-@
+
 import ammonite.ops._
 
 val baseFolder = cwd / up
@@ -11,3 +11,4 @@ val pagesTargetFolder = baseFolder / 'pages
 
 val configFile = baseFolder / "config" / "config.json"
 
+val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")

@@ -6,5 +6,4 @@ project/target/
 target/
 .idea
 .DS_Store
-*.sc
 *.orig
