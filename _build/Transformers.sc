@@ -1,5 +1,3 @@
-val workingDir = ammonite.ops.pwd
-
 import $file.Common, Common._
 import $file.Frontmatter, Frontmatter._
 import $ivy.`org.pegdown:pegdown:1.6.0`
@@ -173,7 +171,7 @@ object BlaarghWriter {
 
     val sb = SitemapBuilder.build(
       entries.map {
-        case (name, fm, _, _) => (dateFormat.format(fm.date.get), name.replaceAll(" ", "_"))
+        case (name, fm, _, _) => (fm.date.get.toString, name.replaceAll(" ", "_"))
       }
     )
 

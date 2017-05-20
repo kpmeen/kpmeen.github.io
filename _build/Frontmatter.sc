@@ -1,5 +1,3 @@
-val workingDir = ammonite.ops.pwd
-
 import $file.Common, Common._
 import $ivy.`org.yaml:snakeyaml:1.17`
 import org.yaml.snakeyaml.Yaml
@@ -9,7 +7,7 @@ import scala.collection.Map
 case class FrontMatter(
   title: String,
   author: String,
-  date: Option[java.util.Date],
+  date: Option[java.time.LocalDate],
   ingress: Option[String],
   labels: Option[Seq[String]],
   image: Option[String],
@@ -17,23 +15,23 @@ case class FrontMatter(
 ) {
 
   def toYaml: String = {
-    val yaml = new Yaml
     val m = {
       val builder = Map.newBuilder[String, Any]
       builder += "title" -> title
       builder += "author" -> author
-      date.foreach(d => builder += "date" -> dateFormat.format(d))
-      builder += "ingress" -> ingress.getOrElse("")
+      date.foreach(d => builder += "date" -> d.toString)
+      builder += "ingress" -> ingress.map(_.replaceAll("\n", " ")).getOrElse("")
       builder += "labels" -> labels.getOrElse(Seq.empty).asJava
       builder.result()
-    }.asJava
-    s"---\n${yaml.dump(m)}---\n\n"
+    }
+
+    val yamlStr = m.map(kv => s"${kv._1}: ${kv._2}").mkString("\n")
+    s"---\n$yamlStr\n---\n\n"
   }
 
 }
 
-sealed trait FrontMatterKey {
-  self =>
+sealed trait FrontMatterKey { self =>
   val strValue = self.getClass.getSimpleName.toLowerCase.stripPrefix("fm").stripSuffix("$")
 }
 case object FMTitle extends FrontMatterKey
@@ -86,7 +84,10 @@ object FrontMatter {
     FrontMatter(
       title = smap.get(FMTitle).map(_.asInstanceOf[String]).getOrElse(""),
       author = smap.get(FMAuthor).map(_.asInstanceOf[String]).getOrElse(""),
-      date = smap.get(FMDate).map(_.asInstanceOf[java.util.Date]),
+      date = smap.get(FMDate).map { fmd =>
+        val d = fmd.asInstanceOf[java.util.Date]
+        d.toInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDate
+      },
       ingress = smap.get(FMIngress).map(_.asInstanceOf[String]),
       labels = smap.get(FMLabels).map(_.asInstanceOf[java.util.ArrayList[String]].asScala),
       image = smap.get(FMImage).map(_.asInstanceOf[String]),
@@ -95,15 +96,14 @@ object FrontMatter {
   }
 
   def toJsonString(fileName: String, fm: FrontMatter) = {
-    // TODO: Add misc keys...
-    s"""  {
-        |    "date": "${fm.date.map(d => dateFormat.format(d)).getOrElse("")}",
-        |    "author": "${fm.author}",
-        |    "title": "${fm.title}",
-        |    "ingress": "${fm.ingress.getOrElse("")}",
-        |    "labels": [${fm.labels.map(_.map(l => "\"" + l + "\"").mkString(",")).getOrElse("")}],
-        |    "filename": "${fileName.replaceAll(" ", "_")}",
-        |    "image": "${fm.image.map(i => "posts/" + i).getOrElse("")}"
-        |  }""".stripMargin
+    s"""{
+        |  "date": "${fm.date.map(_.toString).getOrElse("")}",
+        |  "author": "${fm.author}",
+        |  "title": "${fm.title}",
+        |  "ingress": "${fm.ingress.getOrElse("")}",
+        |  "labels": [${fm.labels.map(_.map(l => "\"" + l + "\"").mkString(",")).getOrElse("")}],
+        |  "filename": "${fileName.replaceAll(" ", "_")}",
+        |  "image": "${fm.image.map(i => "posts/" + i).getOrElse("")}"
+        |}""".stripMargin
   }
 }

@@ -1,5 +1,3 @@
-val workingDir = ammonite.ops.pwd
-
 import $file.Common, Common._
 import $file.Transformers, Transformers._
 import $file.Frontmatter, Frontmatter._
@@ -13,7 +11,7 @@ def main(postTitle: String = "") = {
     val fm = FrontMatter(
       title = postTitle,
       author = "",
-      date = Some(new java.util.Date()),
+      date = Some(java.time.LocalDate.now),
       ingress = None,
       labels = None,
       image = None,

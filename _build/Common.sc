@@ -1,10 +1,9 @@
 import ammonite.ops._
 
-val workingDir = pwd
+val workingDir = cwd
 
-println(s"Current working directory is: $cwd")
+println(s"Current working directory is: $workingDir")
 
-val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
 val baseFolder = workingDir / up
 val postsFolder = baseFolder / '_posts
 val postsTargetFolder = baseFolder / 'posts

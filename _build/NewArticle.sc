@@ -1,5 +1,3 @@
-val cwd = ammonite.ops.pwd
-
 import $file.Frontmatter, Frontmatter._
 import $file.Common, Common._
 import ammonite.ops._
@@ -128,7 +126,7 @@ object CreateFrame {
     val fm = FrontMatter(
       title = txtTitle.getText,
       author = txtAuthor.getText,
-      date = Some(new java.util.Date()),
+      date = Some(java.time.LocalDate.now),
       ingress = Option(txtIngress.getText),
       labels = Option(txtLabels.getText).map[Seq[String]](_.split(",").map(_.trim()).toSeq),
       image = maybeFileName,
@@ -142,16 +140,14 @@ object CreateFrame {
 
 }
 
-def main() {
-  Try {
-    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-  }.recover {
-    case ex: Exception => ex.printStackTrace()
-  }
-
-  SwingUtilities.invokeLater(new Runnable() {
-    def run(): Unit = {
-      CreateFrame.build()
-    }
-  })
+Try {
+  UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+}.recover {
+  case ex: Exception => ex.printStackTrace()
 }
+
+SwingUtilities.invokeLater(new Runnable() {
+  def run(): Unit = {
+    CreateFrame.build()
+  }
+})
