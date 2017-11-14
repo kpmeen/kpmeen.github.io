@@ -4,7 +4,8 @@
 package net.scalytica.blaargh.pages
 
 import japgolly.scalajs.react.extra.router.Path
-import net.scalytica.blaargh.utils.RuntimeConfig
+import net.scalytica.blaargh.models.LetsEncryptConfig
+import net.scalytica.blaargh.utils.StaticConfig
 
 object Views {
 
@@ -18,12 +19,19 @@ object Views {
     override val basePath = ""
   }
 
+  case object LetsEncrypt extends View
+
+  object LetsEncryptPath extends ViewType {
+    override val basePath = s".well-known/acme-challenge"
+    val fullPath = (wk: String) => s"$basePath/$wk"
+  }
+
   case object About extends View with ViewType {
-    override val basePath = s"${RuntimeConfig.PathPrefix}about"
+    override val basePath = s"${StaticConfig.PathPrefix}about"
   }
 
   case object NotFound extends View with ViewType {
-    override val basePath = s"${RuntimeConfig.PathPrefix}notfound"
+    override val basePath = s"${StaticConfig.PathPrefix}notfound"
   }
 
   case class Posts(ref: ArticleRef) extends View {
@@ -31,7 +39,7 @@ object Views {
   }
 
   object Posts extends ViewType {
-    override val basePath = s"${RuntimeConfig.PathPrefix}posts"
+    override val basePath = s"${StaticConfig.PathPrefix}posts"
   }
 
   case class Filter(fc: FilterCriteria) extends View {
@@ -39,13 +47,13 @@ object Views {
   }
 
   object Filter extends ViewType {
-    override val basePath = s"${RuntimeConfig.PathPrefix}filter"
+    override val basePath = s"${StaticConfig.PathPrefix}filter"
   }
 
   case class ArticleRef(date: String, filename: String) {
-    def htmlFilePath = s"${RuntimeConfig.baseUrl.value}posts/$filename.html"
+    def htmlFilePath = s"${StaticConfig.baseUrl.value}posts/$filename.html"
 
-    def navigationPath = s"${RuntimeConfig.PathPrefix}posts/$date/$filename"
+    def navigationPath = s"${StaticConfig.PathPrefix}posts/$date/$filename"
   }
 
   case class FilterCriteria(field: String, value: String)

@@ -5,7 +5,7 @@ package net.scalytica.blaargh.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.models.Article
 import net.scalytica.blaargh.pages.Views.View
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
@@ -29,12 +29,12 @@ object ArticleCardList {
 
     def render(props: Props, state: State) =
       <.div(BlaarghBootstrapCSS.cardCols,
-        state.articles.map(a => ArticleCard(a, props.ctl))
+        state.articles.map(a => ArticleCard(a, props.ctl)).toVdomArray
       )
   }
 
-  val component = ReactComponentB[Props]("ArticleCardList")
-    .initialState_P(p => State(Seq.empty, p.ctl))
+  val component = ScalaComponent.builder[Props]("ArticleCardList")
+    .initialStateFromProps(p => State(Seq.empty, p.ctl))
     .renderBackend[Backend]
     .componentWillMount($ => $.backend.init)
     .build

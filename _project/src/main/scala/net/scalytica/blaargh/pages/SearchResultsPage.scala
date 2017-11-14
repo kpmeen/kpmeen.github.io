@@ -5,7 +5,7 @@ package net.scalytica.blaargh.pages
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.components.ArticleCard
 import net.scalytica.blaargh.models.Article
 import net.scalytica.blaargh.pages.Views.{FilterCriteria, View}
@@ -39,18 +39,18 @@ object SearchResultsPage {
         <.div(BlaarghBootstrapCSS.cardCols,
           props.fc.field match {
             case "author" =>
-              state.allArticles.filter(_.author == props.fc.value).map(a => ArticleCard(a, props.ctl))
+              state.allArticles.filter(_.author == props.fc.value).map(a => ArticleCard(a, props.ctl)).toVdomArray
             case "label" =>
-              state.allArticles.filter(_.labels.contains(props.fc.value)).map(a => ArticleCard(a, props.ctl))
+              state.allArticles.filter(_.labels.contains(props.fc.value)).map(a => ArticleCard(a, props.ctl)).toVdomArray
             case _ =>
-              EmptyTag
+              EmptyVdom
           }
         )
       )
   }
 
-  val component = ReactComponentB[Props]("SearchResultsPage")
-    .initialState_P(p => State())
+  val component = ScalaComponent.builder[Props]("SearchResultsPage")
+    .initialStateFromProps(p => State())
     .renderBackend[Backend]
     .componentDidMount(_.backend.init)
     .build

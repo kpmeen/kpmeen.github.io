@@ -7,12 +7,12 @@ import net.scalytica.blaargh.components._
 import net.scalytica.blaargh.pages.AboutPage
 
 import scalacss.ScalaCssReact._
-import scalacss.mutable.GlobalRegistry
-import scalacss.Defaults._
+import scalacss.ProdDefaults._
+import scalacss.internal.mutable.GlobalRegistry
 
 object CSSRegistry {
 
-  def load() = {
+  def load(): Unit = {
     GlobalRegistry.register(
       BaseCSS,
       BlaarghBootstrapCSS,

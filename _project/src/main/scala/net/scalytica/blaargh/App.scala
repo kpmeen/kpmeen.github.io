@@ -5,24 +5,21 @@ package net.scalytica.blaargh
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router._
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.components._
 import net.scalytica.blaargh.models.{Article, Config}
-import net.scalytica.blaargh.pages.Views._
+import net.scalytica.blaargh.pages.Views.{LetsEncrypt, _}
 import net.scalytica.blaargh.pages._
 import net.scalytica.blaargh.styles.{BlaarghBootstrapCSS, CSSRegistry}
-import net.scalytica.blaargh.utils.RuntimeConfig
+import net.scalytica.blaargh.utils.StaticConfig
 
-import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js._
-import scala.scalajs.js.annotation.JSExport
+import scala.scalajs.js.annotation.JSExportTopLevel
 import scalacss.ScalaCssReact._
 
 
-object App extends JSApp {
-
-  val SiteConfig = Config.load()
+object App {
 
   val postsRule = RouterConfigDsl[ArticleRef].buildRule { dsl =>
     import dsl._
@@ -42,33 +39,42 @@ object App extends JSApp {
       }
   }
 
-  val routerConfig = RouterConfigDsl[View].buildConfig { dsl =>
+  val routerConfig = (cfg: Config) => RouterConfigDsl[View].buildConfig { dsl =>
     import dsl._
 
+    val lec = cfg.letsEncryptOrEmpty
+
     (trimSlashes
+      | staticRoute(LetsEncryptPath.fullPath(lec.wellKnownBase), LetsEncrypt) ~> render(WellKnownPage(lec.wellKnownValue))
       | staticRoute(Home.basePath, Home) ~> renderR(ctl => HomePage(ctl))
-      | staticRoute(About.basePath, About) ~> render(AboutPage(SiteConfig))
+      | staticRoute(About.basePath, About) ~> render(AboutPage(cfg))
       | staticRoute(NotFound.basePath, NotFound) ~> render(NotFoundPage())
       | filterRule.prefixPath_/(Filter.basePath).pmap[View](Filter.apply) { case Filter(criteria) => criteria }
       | postsRule.prefixPath_/(Posts.basePath).pmap[View](Posts.apply) { case Posts(ref) => ref }
       )
       .notFound(nfp => redirectToPage(NotFound)(Redirect.Replace))
-      .renderWith((ctl, r) => layout(ctl, r))
+      .renderWith((ctl, r) => layout(cfg)(ctl, r))
   }
 
-  val router = Router(RuntimeConfig.baseUrl, routerConfig) //.logToConsole)
+  val router = (cfg: Config) => Router(StaticConfig.baseUrl, routerConfig(cfg)) //.logToConsole)
 
-  def layout(ctl: RouterCtl[View], r: Resolution[View]) = BlaarghLayout(SiteConfig, ctl, r)
+  def layout(cfg: Config)(ctl: RouterCtl[View], r: Resolution[View]) = BlaarghLayout(cfg, ctl, r)
 
-  @JSExport
-  override def main(): Unit = {
+  @JSExportTopLevel("net.scalytica.blaargh.App")
+  protected def getInstance(): this.type = this
+
+  def main(): Unit = {
     CSSRegistry.load()
-    router().render(org.scalajs.dom.document.getElementsByClassName("blaargh")(0))
+    Config.load().map { cfg =>
+      val container = org.scalajs.dom.document.getElementsByClassName("blaargh")(0)
+      val rn = ReactExt_DomNode(container)
+      router(cfg)().renderIntoDOM(rn.domAsHtml)
+    }
   }
 
   object BlaarghLayout {
 
-    case class Props(futureConf: Future[Config], ctl: RouterCtl[View], r: Resolution[View])
+    case class Props(conf: Config, ctl: RouterCtl[View], r: Resolution[View])
 
     case class State(conf: Config)
 
@@ -77,12 +83,10 @@ object App extends JSApp {
 
       def init: Callback = {
         $.props.map { p =>
-          Callback.future[Unit] {
-            p.futureConf.map { c =>
-              ga("create", c.owner.googleAnalytics, "auto")
-              ga("send", "pageview")
-              $.modState(_.copy(conf = c))
-            }
+          Callback[Unit] {
+            ga("create", p.conf.owner.googleAnalytics, "auto")
+            ga("send", "pageview")
+            $.modState(_.copy(conf = p.conf))
           }.runNow()
         }
       }
@@ -99,7 +103,7 @@ object App extends JSApp {
           <.header(BlaarghBootstrapCSS.blaarghHeader,
             <.div(BlaarghBootstrapCSS.blaarghHeaderSVGContainer,
               <.div(BlaarghBootstrapCSS.blaarghSVGHeaderText,
-                HeaderSVG(state.conf)
+                HeaderSVG(props.conf)
               )
             )
           ),
@@ -115,14 +119,14 @@ object App extends JSApp {
       }
     }
 
-    val component = ReactComponentB[Props]("BlaarghLayout")
-      .initialState_P(p => State(Config.empty))
+    val component = ScalaComponent.builder[Props]("BlaarghLayout")
+      .initialStateFromProps(p => State(Config.empty))
       .renderBackend[Backend]
       .componentWillMount(_.backend.init)
-      .componentWillReceiveProps(ctx => ctx.$.backend.feedAnalytics(ctx.nextProps))
+      .componentWillReceiveProps($ => $.backend.feedAnalytics($.nextProps))
       .build
 
-    def apply(conf: Future[Config], ctl: RouterCtl[View], r: Resolution[View]) =
+    def apply(conf: Config, ctl: RouterCtl[View], r: Resolution[View]) =
       component(Props(conf, ctl, r))
 
   }

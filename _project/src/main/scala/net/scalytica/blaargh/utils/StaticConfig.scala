@@ -5,7 +5,7 @@ package net.scalytica.blaargh.utils
 
 import japgolly.scalajs.react.extra.router.BaseUrl
 
-object RuntimeConfig {
+object StaticConfig {
 
   val PathPrefix = "#"
 

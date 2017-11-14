@@ -6,13 +6,14 @@ package net.scalytica.blaargh.components
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.PackageBase.VdomAttr
+import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.models.Config
 import net.scalytica.blaargh.pages.Views.{About, Home, Posts, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import org.scalajs.dom
 
-import scalacss.Defaults._
+import scalacss.ProdDefaults._
 import scalacss.ScalaCssReact._
 
 object Navbar {
@@ -79,9 +80,9 @@ object Navbar {
       val isActive = props.currPage == menuItem || (menuItem == Home && props.currPage.isInstanceOf[Posts])
 
       <.li(Styles.blaarghNavItem(isActive),
-        <.a(Styles.blaarghNavbarLink, ^.href := "_", ^.onClick ==> { (e: ReactEventI) => e.preventDefaultCB >> props.ctl.set(menuItem) },
+        <.a(Styles.blaarghNavbarLink, ^.href := "_", ^.onClick ==> { (e: ReactEventFromInput) => e.preventDefaultCB >> props.ctl.set(menuItem) },
           <.span(menuName),
-          if (isActive) <.span(Styles.navActiveHamburger, "(current)") else EmptyTag
+          if (isActive) <.span(Styles.navActiveHamburger, "(current)") else EmptyVdom
         )
       )
     }
@@ -92,15 +93,15 @@ object Navbar {
           <.button(
             Styles.navToggler,
             ^.tpe := "button",
-            "data-toggle".reactAttr := "collapse",
-            "data-target".reactAttr := "#collapseNav",
+            VdomAttr("data-toggle") := "collapse",
+            VdomAttr("data-target") := "#collapseNav",
             "\u2630"
           ),
           <.div(Styles.navCollapse, ^.id := "collapseNav",
             <.a(
               Styles.blaarghBrand,
               ^.href := "_",
-              ^.onClick ==> { (e: ReactEventI) => e.preventDefaultCB >> props.ctl.set(Home) },
+              ^.onClick ==> { (e: ReactEventFromInput) => e.preventDefaultCB >> props.ctl.set(Home) },
               s"${props.siteConfig.siteTitle.toUpperCase}"
             ),
             <.ul(Styles.navbar,
@@ -113,7 +114,7 @@ object Navbar {
     }
   }
 
-  val component = ReactComponentB[Props]("Navbar")
+  val component = ScalaComponent.builder[Props]("Navbar")
     .initialState(State())
     .renderBackend[Backend]
     .configure(

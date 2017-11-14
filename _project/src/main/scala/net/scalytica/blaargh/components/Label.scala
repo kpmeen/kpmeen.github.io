@@ -5,7 +5,7 @@ package net.scalytica.blaargh.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.pages.Views.{Filter, FilterCriteria, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 
@@ -15,8 +15,8 @@ object Label {
 
   case class Props(lbl: String, ctl: RouterCtl[View])
 
-  val component = ReactComponentB[Props]("Label")
-    .initialState_P(p => p)
+  val component = ScalaComponent.builder[Props]("Label")
+    .initialStateFromProps(p => p)
     .render { $ =>
       <.span(
         BlaarghBootstrapCSS.labelDefault,

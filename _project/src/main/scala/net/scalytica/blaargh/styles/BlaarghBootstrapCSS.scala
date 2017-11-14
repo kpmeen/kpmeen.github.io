@@ -4,7 +4,7 @@
 package net.scalytica.blaargh.styles
 
 import scala.concurrent.duration._
-import scalacss.Defaults._
+import scalacss.ProdDefaults._
 
 object BlaarghBootstrapCSS extends StyleSheet.Inline {
 
