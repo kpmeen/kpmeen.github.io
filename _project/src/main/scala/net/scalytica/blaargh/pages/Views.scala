@@ -4,7 +4,6 @@
 package net.scalytica.blaargh.pages
 
 import japgolly.scalajs.react.extra.router.Path
-import net.scalytica.blaargh.models.LetsEncryptConfig
 import net.scalytica.blaargh.utils.StaticConfig
 
 object Views {
@@ -17,13 +16,6 @@ object Views {
 
   case object Home extends View with ViewType {
     override val basePath = ""
-  }
-
-  case object LetsEncrypt extends View
-
-  object LetsEncryptPath extends ViewType {
-    override val basePath = s".well-known/acme-challenge"
-    val fullPath = (wk: String) => s"$basePath/$wk"
   }
 
   case object About extends View with ViewType {

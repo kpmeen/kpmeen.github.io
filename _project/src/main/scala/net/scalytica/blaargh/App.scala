@@ -8,7 +8,7 @@ import japgolly.scalajs.react.extra.router._
 import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.components._
 import net.scalytica.blaargh.models.{Article, Config}
-import net.scalytica.blaargh.pages.Views.{LetsEncrypt, _}
+import net.scalytica.blaargh.pages.Views._
 import net.scalytica.blaargh.pages._
 import net.scalytica.blaargh.styles.{BlaarghBootstrapCSS, CSSRegistry}
 import net.scalytica.blaargh.utils.StaticConfig
@@ -42,10 +42,7 @@ object App {
   val routerConfig = (cfg: Config) => RouterConfigDsl[View].buildConfig { dsl =>
     import dsl._
 
-    val lec = cfg.letsEncryptOrEmpty
-
     (trimSlashes
-      | staticRoute(LetsEncryptPath.fullPath(lec.wellKnownBase), LetsEncrypt) ~> render(WellKnownPage(lec.wellKnownValue))
       | staticRoute(Home.basePath, Home) ~> renderR(ctl => HomePage(ctl))
       | staticRoute(About.basePath, About) ~> render(AboutPage(cfg))
       | staticRoute(NotFound.basePath, NotFound) ~> render(NotFoundPage())
