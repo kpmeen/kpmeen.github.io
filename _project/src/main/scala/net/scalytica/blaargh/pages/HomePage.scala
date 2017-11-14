@@ -13,9 +13,8 @@ object HomePage {
 
   case class Props(ctl: RouterCtl[View])
 
-  val component = ReactComponentB[Props]("Home")
-    .initialState_P(p => p)
-    .render($ => ArticleCardList($.props.ctl))
+  val component = ScalaComponent.builder[Props]("Home")
+    .render($ => ArticleCardList($.props.ctl).vdomElement)
     .build
 
 

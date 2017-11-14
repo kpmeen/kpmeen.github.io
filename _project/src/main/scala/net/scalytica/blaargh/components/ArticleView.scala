@@ -5,7 +5,7 @@ package net.scalytica.blaargh.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.models.Article
 import net.scalytica.blaargh.pages.Views.{ArticleRef, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
@@ -14,7 +14,7 @@ import org.scalajs.dom.document
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js.Dynamic.global
-import scalacss.Defaults._
+import scalacss.ProdDefaults._
 import scalacss.ScalaCssReact._
 
 object ArticleView {
@@ -71,7 +71,7 @@ object ArticleView {
       <.div(BlaarghBootstrapCSS.container,
         state.content.map(c =>
           <.div(Styles.post,
-            state.article.map(a => <.h1(a.title)).getOrElse(EmptyTag),
+            state.article.map(a => <.h1(a.title)).getOrElse(EmptyVdom),
             state.article.map(a =>
               <.p(
                 <.span(BlaarghBootstrapCSS.textMuted,
@@ -80,12 +80,12 @@ object ArticleView {
                 <.span(^.marginLeft := "2rem",
                   a.labels.map { l =>
                     Label(l, props.ctl.contramap[View](v => props.ref))
-                  }
+                  }.toVdomArray
                 )
               )
-            ).getOrElse(EmptyTag),
+            ).getOrElse(EmptyVdom),
             <.span(
-              ^.dangerouslySetInnerHtml(c)
+              ^.dangerouslySetInnerHtml := c
             )
           )
         ).getOrElse(
@@ -94,11 +94,11 @@ object ArticleView {
       )
   }
 
-  val component = ReactComponentB[Props]("ArticleView")
-    .initialState_P(p => State())
+  val component = ScalaComponent.builder[Props]("ArticleView")
+    .initialStateFromProps(p => State())
     .renderBackend[Backend]
     .componentWillMount(_.backend.init)
-    .componentDidUpdate(_.$.backend.highlight)
+    .componentDidUpdate(_.backend.highlight)
     .build
 
   def apply(article: Future[Option[Article]], ref: ArticleRef, ctl: RouterCtl[ArticleRef]) =

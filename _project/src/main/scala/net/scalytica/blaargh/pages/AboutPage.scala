@@ -4,7 +4,7 @@
 package net.scalytica.blaargh.pages
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.models.Config
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import net.scalytica.blaargh.utils.StringUtils
@@ -12,12 +12,12 @@ import org.scalajs.dom.ext.Ajax
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-import scalacss.Defaults._
+import scalacss.ProdDefaults._
 import scalacss.ScalaCssReact._
 
 object AboutPage {
 
-  case class Props(siteConf: Future[Config])
+  case class Props(siteConf: Config)
 
   case class State(conf: Config, content: Option[String])
 
@@ -57,12 +57,9 @@ object AboutPage {
   class Backend($: BackendScope[Props, State]) {
     def init: Callback = {
       $.props.map(p =>
-        Callback.future[Unit] {
-          for {
-            config <- p.siteConf
-            page <- loadPage
-          } yield {
-            $.modState(_.copy(conf = config, content = page))
+        Callback[Unit] {
+          loadPage.map { page =>
+            $.modState(_.copy(conf = p.siteConf, content = page))
           }
         }.runNow()
       )
@@ -81,7 +78,7 @@ object AboutPage {
         <.div(BlaarghBootstrapCSS.row,
           <.div(BlaarghBootstrapCSS.col(8),
             <.div(BlaarghBootstrapCSS.container,
-              ^.dangerouslySetInnerHtml(state.content.map(c => c).getOrElse(""))
+              ^.dangerouslySetInnerHtml := state.content.map(c => c).getOrElse("")
             )
           ),
           <.div(BlaarghBootstrapCSS.col(4),
@@ -100,7 +97,7 @@ object AboutPage {
                       ^.href := s"mailto:$email",
                       <.i(^.className := "fa fa-envelope")
                     )
-                  ).getOrElse(EmptyTag),
+                  ).getOrElse(EmptyVdom),
                   StringUtils.asOption(state.conf.owner.twitter).map(twitter =>
                     <.a(
                       Styles.authorSocial,
@@ -108,7 +105,7 @@ object AboutPage {
                       ^.target := "_blank",
                       <.i(^.className := "fa fa-twitter")
                     )
-                  ).getOrElse(EmptyTag),
+                  ).getOrElse(EmptyVdom),
                   StringUtils.asOption(state.conf.owner.github).map(github =>
                     <.a(
                       Styles.authorSocial,
@@ -116,7 +113,7 @@ object AboutPage {
                       ^.target := "_blank",
                       <.i(^.className := "fa fa-github")
                     )
-                  ).getOrElse(EmptyTag)
+                  ).getOrElse(EmptyVdom)
                 )
               )
             )
@@ -126,12 +123,12 @@ object AboutPage {
     }
   }
 
-  val component = ReactComponentB[Props]("About")
-    .initialState_P(p => State(Config.empty, None))
+  val component = ScalaComponent.builder[Props]("About")
+    .initialStateFromProps(p => State(Config.empty, None))
     .renderBackend[Backend]
     .componentWillMount(_.backend.init)
     .build
 
-  def apply(conf: Future[Config]) = component(Props(conf))
+  def apply(conf: Config) = component(Props(conf))
 
 }

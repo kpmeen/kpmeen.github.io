@@ -1,28 +1,28 @@
 /**
- * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
- */
+  * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+  */
 package net.scalytica.blaargh.models
 
 import org.scalajs.dom.ext.Ajax
-import upickle.default._
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import play.api.libs.json._
 
 case class Author(
-  name: String,
-  email: String
+    name: String,
+    email: String
 )
 
 case class Owner(
-  name: String,
-  avatar: String,
-  bio: String,
-  email: String,
-  disqusShortname: String,
-  twitter: String,
-  googleAnalytics: String,
-  github: String
+    name: String,
+    avatar: String,
+    bio: String,
+    email: String,
+    disqusShortname: String,
+    twitter: String,
+    googleAnalytics: String,
+    github: String
 )
 
 object Owner {
@@ -39,9 +39,9 @@ object Owner {
 }
 
 case class Config(
-  siteTitle: String,
-  authors: Seq[Author],
-  owner: Owner
+    siteTitle: String,
+    authors: Seq[Author],
+    owner: Owner
 )
 
 object Config {
@@ -52,14 +52,22 @@ object Config {
     owner = Owner.empty
   )
 
+  implicit val authFormat = Json.format[Author]
+  implicit val ownrFormat = Json.format[Owner]
+  implicit val confFormat = Json.format[Config]
+
   def load(): Future[Config] =
-    Ajax.get(
-      url = "config/config.json"
-    ).map { xhr =>
-      xhr.status match {
-        case ok: Int if ok == 200 => read[Config](xhr.responseText)
-        case _ => empty
+    Ajax
+      .get(
+        url = "config/config.json"
+      )
+      .map { xhr =>
+        xhr.status match {
+          case ok: Int if ok == 200 =>
+            val js = Json.parse(xhr.responseText)
+            Json.fromJson[Config](js).getOrElse(empty)
+          case _ => empty
+        }
       }
-    }
 
 }

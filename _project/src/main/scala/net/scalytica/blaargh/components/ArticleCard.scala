@@ -5,13 +5,13 @@ package net.scalytica.blaargh.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.models.Article
 import net.scalytica.blaargh.pages.Views.{Filter, FilterCriteria, Posts, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import net.scalytica.blaargh.utils.StringUtils._
 
-import scalacss.Defaults._
+import scalacss.ProdDefaults._
 import scalacss.ScalaCssReact._
 
 object ArticleCard {
@@ -59,7 +59,7 @@ object ArticleCard {
             <.h4(^.onClick --> openArticleCB(props), title)
           )
         )
-      ).getOrElse(EmptyTag)
+      ).getOrElse(EmptyVdom)
 
     def maybeImage(props: Props) =
       asOption(props.article.image).map(image =>
@@ -71,7 +71,7 @@ object ArticleCard {
 
     def render(props: Props) = {
       <.div(Styles.articleCard,
-        maybeImage(props).getOrElse(EmptyTag),
+        maybeImage(props).getOrElse(EmptyVdom),
         maybeTitle(props)(title =>
           <.div(BlaarghBootstrapCSS.cardBlock,
             title,
@@ -90,8 +90,8 @@ object ArticleCard {
                 <.a(BlaarghBootstrapCSS.date, s"${props.article.asJsDate.toDateString()}")
               )
             ),
-            if (props.article.labels.nonEmpty) <.span(props.article.labels.map(l => Label(l, props.ctl)))
-            else EmptyTag
+            if (props.article.labels.nonEmpty) <.span(props.article.labels.map(l => Label(l, props.ctl)).toVdomArray)
+            else EmptyVdom
           )
         )
       )
@@ -99,7 +99,7 @@ object ArticleCard {
 
   }
 
-  val component = ReactComponentB[Props]("ArticleCard")
+  val component = ScalaComponent.builder[Props]("ArticleCard")
     .stateless
     .renderBackend[Backend]
     .build
