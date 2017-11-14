@@ -16,9 +16,5 @@
     "twitter": "KnutPMeen",
     "googleAnalytics": "UA-35636560-2",
     "github": "kpmeen"
-  },
-  "letsEncrypt": {
-    "wellKnownBase": "foo",
-    "wellKnownValue": "foo.bar"
   }
 }
