@@ -6,6 +6,7 @@ pages:
   - curl -L -o /usr/local/bin/amm https://git.io/vdNv2 && chmod +x /usr/local/bin/amm
   - cd _build
   - amm Publish.sc
+  - cd ..
   - mkdir public
   - mv index.html public
   - mv assets public
