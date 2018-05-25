@@ -13,7 +13,7 @@ I'm not going to jot down how this all works. I'll save that for the template do
 
 ### Where can I find this template?
 
-This site is now using the new "Blaargh!" template. But if you want to have a look at the source it can be found [here](https://github.com/kpmeen/blaargh). There's also a  [demo](http://scalytica.net/blaargh) of what the raw template looks like.
+This site is now using the new "Blaargh!" template. But if you want to have a look at the source it can be found [here](https://github.com/kpmeen/blaargh). There's also a  [demo](https://scalytica.net/blaargh) of what the raw template looks like.
 ![Blaargh! demo screen shot](BlaarghScreenShot.png)
 
 
