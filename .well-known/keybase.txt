@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/kpmeen
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://scalytica.net
+  * I am kpmeen (https://keybase.io/kpmeen) on keybase.
+  * I have a public key ASC3SBo7gxeGfzXo-8UWdVeiYZLrv8pp3_5SsL8KlJCVUAo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "01012e97fdd9c7260b9074f92691a82900ef48f30461add67bee8c2225092b51f59d0a",
+      "host": "keybase.io",
+      "kid": "0120b7481a3b8317867f35e8fbc5167557a26192ebbfca69dffe52b0bf0a949095500a",
+      "uid": "35b3edb2852046c9edc09949a7c3b119",
+      "username": "kpmeen"
+    },
+    "merkle_root": {
+      "ctime": 1553120776,
+      "hash": "82a198c50c4cf56995d52704b7b3dbb0b4d37dbf58d8737889b9f327e51f6e254f922ab275fb513e830e53e9aa19a17035b7aaa41a1ab6b2ca4787de0850faca",
+      "hash_meta": "872f5a44a8089f6c5df81a8a3d099ab8d5a16d22eaab8765a3b3430982d0b461",
+      "seqno": 4991987
+    },
+    "service": {
+      "entropy": "deOLsDP8YEaGSladddI1RYAk",
+      "hostname": "scalytica.net",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "3.1.2"
+  },
+  "ctime": 1553120785,
+  "expire_in": 504576000,
+  "prev": "ac7fdb634c90751c1fc8e24729157441c30d07afa0dd65a7ef590878c986287b",
+  "seqno": 48,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgt0gaO4MXhn816PvFFnVXomGS67/Kad/+UrC/CpSQlVAKp3BheWxvYWTESpcCMMQgrH/bY0yQdRwfyOJHKRV0QcMNB6+g3WWn71kIeMmGKHvEIFF682PsNfmW909r4bePJ8/iqFMsvtjcEbYJwA/VigSVAgHCo3NpZ8RAg2uzHzsEYdGYzJltbk6DENjNnEr+A/QScKDzOKiHVvWIBpnsY5WeHz3lymP7PB0pOHB5Z3evUro3KbffOFE6DqhzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIDBKh/saRQisNOVXg/nl4PXbCBhP7qURZuX2RorVC/nso3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/kpmeen
+
+==================================================================
