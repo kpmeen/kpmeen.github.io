@@ -1,6 +1,6 @@
 import ammonite.ops._
 
-val workingDir = cwd
+val workingDir = pwd
 
 println(s"Current working directory is: $workingDir")
 
