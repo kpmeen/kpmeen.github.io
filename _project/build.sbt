@@ -1,8 +1,8 @@
-name := """blaargh"""
+name := """scalytica.net"""
 
 version := "1.0"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.12.10"
 
 scalacOptions ++= Seq(
   "-feature",
@@ -13,7 +13,8 @@ scalacOptions ++= Seq(
   "-language:postfixOps"
 )
 
-lazy val root = (project in file(".")).enablePlugins(ScalaJSPlugin)
+lazy val root =
+  (project in file(".")).enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
 
 sourcesInBase := false
 
@@ -26,14 +27,23 @@ scalaJSUseMainModuleInitializer in Test := false
 
 scalaJSStage in Global := FastOptStage
 
-// See more at: http://typesafe.com/blog/improved-dependency-management-with-sbt-0137#sthash.7hS6gFEu.dpuf
+onChangedBuildSource in Global := ReloadOnSourceChanges
+
 updateOptions := updateOptions.value.withCachedResolution(true)
 
 // Dependency management...
-val scalaJSReactVersion = "1.1.1"
-val scalaCssVersion = "0.5.3"
-val scalazVersion = "7.2.7"
-val monocleVersion = "1.4.0"
+val scalaJSReactVersion  = "1.4.2"
+val scalaCssVersion      = "0.5.6"
+val scalaJsDomVersion    = "0.9.7"
+val scalaJsJQueryVersion = "0.9.5"
+
+val scalazVersion    = "7.2.7"
+val monocleVersion   = "1.5.0"
+val ammoniteVersion  = "1.7.4"
+val snakeYamlVersion = "1.25"
+val pegdownVersion   = "1.6.0"
+val playJsonVersion  = "2.7.4"
+val scalaTestVersion = "3.0.8"
 
 val scalaJsReactLibs = Seq(
   "core",
@@ -43,14 +53,16 @@ val scalaJsReactLibs = Seq(
 )
 
 libraryDependencies ++= Seq(
-  compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
-  "be.doeraene"                  %%% "scalajs-jquery" % "0.9.1",
-  "org.scala-js"                 %%% "scalajs-dom"    % "0.9.3",
+  compilerPlugin(
+    "org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full
+  ),
+  "be.doeraene"                  %%% "scalajs-jquery" % scalaJsJQueryVersion,
+  "org.scala-js"                 %%% "scalajs-dom"    % scalaJsDomVersion,
   "com.github.julien-truffaut"   %%% "monocle-core"   % monocleVersion,
   "com.github.julien-truffaut"   %%% "monocle-macro"  % monocleVersion,
   "com.github.japgolly.scalacss" %%% "core"           % scalaCssVersion,
   "com.github.japgolly.scalacss" %%% "ext-react"      % scalaCssVersion,
-  "com.typesafe.play"            %%% "play-json"      % "2.6.6"
+  "com.typesafe.play"            %%% "play-json"      % playJsonVersion
 )
 
 libraryDependencies ++= scalaJsReactLibs.map { lib =>
@@ -58,36 +70,75 @@ libraryDependencies ++= scalaJsReactLibs.map { lib =>
 }
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest"    % "3.0.4" % "test",
-  "com.lihaoyi"   %% "ammonite-ops" % "1.0.3" % "test",
-  "org.yaml"      % "snakeyaml"     % "1.17"  % "test",
-  "org.pegdown"   % "pegdown"       % "1.6.0" % "test"
+  "org.scalatest" %% "scalatest"    % scalaTestVersion % "test",
+  "com.lihaoyi"   %% "ammonite-ops" % ammoniteVersion  % "test",
+  "org.yaml"      % "snakeyaml"     % snakeYamlVersion % "test",
+  "org.pegdown"   % "pegdown"       % pegdownVersion   % "test"
 )
 
-initialCommands in (Test, console) := """ammonite.repl.Main.run("")"""
+val reactJSVersion = "16.8.0"
 
-val reactJSVersion = "15.0.1"
-
-val reactWebJars = Seq(
-  "-with-addons" -> "React",
-  "-dom"         -> "ReactDOM",
-  "-dom-server"  -> "ReactDOMServer"
-)
-
-jsDependencies ++= reactWebJars.map { lib =>
-  "org.webjars.bower" % "react" % reactJSVersion / s"${lib._1}.js" minified s"${lib._1}.min.js" commonJSName lib._2
-}
+npmDependencies in Compile ++= Seq(
+  "react",
+  "react-dom"
+).map(l => l -> reactJSVersion)
 
 // creates single js resource file for easy integration in html page
 skip in packageJSDependencies := false
 
-// copy javascript files to js folder,that are generated using fastOptJS/fullOptJS
 val jsTarget = "../assets/js"
-crossTarget in (Compile, fullOptJS) := file(jsTarget)
-crossTarget in (Compile, fastOptJS) := file(jsTarget)
-crossTarget in (Compile, packageJSDependencies) := file(jsTarget)
-crossTarget in (Compile, scalaJSUseMainModuleInitializer) := file(jsTarget)
-crossTarget in (Compile, packageMinifiedJSDependencies) := file(jsTarget)
 
-artifactPath in (Compile, fastOptJS) := ((crossTarget in (Compile, fastOptJS)).value / ((moduleName in fastOptJS).value + "-opt.js"))
-artifactPath in (Compile, fullOptJS) := ((crossTarget in (Compile, fullOptJS)).value / ((moduleName in fullOptJS).value + "-opt.js"))
+lazy val fastBlaargh = taskKey[Unit]("Runs compile and webpack using fastOptJS")
+lazy val fullBlaargh = taskKey[Unit]("Runs compile and webpack using fullOptJS")
+
+fastBlaargh := {
+  def setTargetFileName(origFileName: String): String = {
+    val fname = name.value.replaceAllLiterally(".", "-")
+    if (origFileName.endsWith(".map")) s"$fname.js.map"
+    else s"$fname.js"
+  }
+
+  val webpackFiles = (webpack in (Compile, fastOptJS)).value
+
+  val bundleFiles = webpackFiles.filter { af =>
+    af.metadata
+      .get(BundlerFileTypeAttr)
+      .contains(BundlerFileType.ApplicationBundle) || af.data.name.endsWith(
+      ".js.map"
+    )
+  }.map(af => af.data -> setTargetFileName(af.data.name))
+    .map(fileMapping => fileMapping._1 -> file(jsTarget) / fileMapping._2)
+
+  IO.copy(
+    sources = bundleFiles,
+    overwrite = true,
+    preserveLastModified = true,
+    preserveExecutable = true
+  )
+}
+
+fullBlaargh := {
+  def setTargetFileName(origFileName: String): String = {
+    val fname = name.value.replaceAllLiterally(".", "-")
+    if (origFileName.endsWith(".map")) s"$fname.js.map"
+    else s"$fname.js"
+  }
+
+  val webpackFiles = (webpack in (Compile, fullOptJS)).value
+
+  val bundleFiles = webpackFiles.filter { af =>
+    af.metadata
+      .get(BundlerFileTypeAttr)
+      .contains(BundlerFileType.ApplicationBundle) || af.data.name.endsWith(
+      ".js.map"
+    )
+  }.map(af => af.data -> setTargetFileName(af.data.name))
+    .map(fileMapping => fileMapping._1 -> file(jsTarget) / fileMapping._2)
+
+  IO.copy(
+    sources = bundleFiles,
+    overwrite = true,
+    preserveLastModified = true,
+    preserveExecutable = true
+  )
+}

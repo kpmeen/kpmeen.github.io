@@ -1,6 +1,6 @@
 /**
-  * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
-  */
+ * Copyright(c) 2019 Knut Petter Meen, all rights reserved.
+ */
 package net.scalytica.blaargh.models
 
 import net.scalytica.blaargh.pages.Views.ArticleRef
@@ -26,7 +26,7 @@ case class Article(
 
   def articleRef: ArticleRef = ArticleRef(shortDate, filename)
 
-  def shortDate = date.take(10)
+  def shortDate: String = date.take(10) // scalastyle:ignore
 
 }
 
@@ -34,26 +34,22 @@ object Article {
 
   lazy val Articles = fetchAll
 
-  implicit val formats = Json.format[Article]
+  implicit val formats: OFormat[Article] = Json.format[Article]
 
   def get(a: ArticleRef) =
-    Ajax
-      .get(
-        url = a.htmlFilePath
-      )
-      .map { xhr =>
-        xhr.status match {
-          case ok: Int if ok == 200 => Some(xhr.responseText)
-          case err                  => None
-        }
+    Ajax.get(url = a.htmlFilePath).map { xhr =>
+      xhr.status match {
+        case ok: Int if ok == 200 => Some(xhr.responseText)
+        case _                    => None
       }
+    }
 
   def fetchAll: Future[Seq[Article]] =
     Ajax
       .get(
         url = s"${StaticConfig.baseUrl.value}posts/posts.json",
         headers = Map(
-          "Accept" -> "application/json",
+          "Accept"       -> "application/json",
           "Content-Type" -> "application/json"
         )
       )
@@ -66,7 +62,7 @@ object Article {
               .map(_.sortBy(a => a.date).reverse)
               .getOrElse(Seq.empty)
 
-          case err =>
+          case _ =>
             Seq.empty[Article]
         }
       }

@@ -1,5 +1,5 @@
 /**
- * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+ * Copyright(c) 2019 Knut Petter Meen, all rights reserved.
  */
 package net.scalytica.blaargh.pages
 

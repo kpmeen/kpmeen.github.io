@@ -1,6 +1,6 @@
 /**
-  * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
-  */
+ * Copyright(c) 2019 Knut Petter Meen, all rights reserved.
+ */
 package net.scalytica.blaargh.models
 
 import org.scalajs.dom.ext.Ajax
@@ -52,22 +52,18 @@ object Config {
     owner = Owner.empty
   )
 
-  implicit val authFormat = Json.format[Author]
-  implicit val ownrFormat = Json.format[Owner]
-  implicit val confFormat = Json.format[Config]
+  implicit val authFormat: OFormat[Author] = Json.format[Author]
+  implicit val ownrFormat: OFormat[Owner]  = Json.format[Owner]
+  implicit val confFormat: OFormat[Config] = Json.format[Config]
 
   def load(): Future[Config] =
-    Ajax
-      .get(
-        url = "config/config.json"
-      )
-      .map { xhr =>
-        xhr.status match {
-          case ok: Int if ok == 200 =>
-            val js = Json.parse(xhr.responseText)
-            Json.fromJson[Config](js).getOrElse(empty)
-          case _ => empty
-        }
+    Ajax.get(url = "config/config.json").map { xhr =>
+      xhr.status match {
+        case ok: Int if ok == 200 =>
+          val js = Json.parse(xhr.responseText)
+          Json.fromJson[Config](js).getOrElse(empty)
+        case _ => empty
       }
+    }
 
 }

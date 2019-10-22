@@ -1,5 +1,5 @@
 /**
- * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+ * Copyright(c) 2019 Knut Petter Meen, all rights reserved.
  */
 package net.scalytica.blaargh.components
 
@@ -19,21 +19,25 @@ object ArticleCardList {
 
   case class State(articles: Seq[Article], ctl: RouterCtl[View])
 
-  class Backend($: BackendScope[Props, State]) {
+  class Backend($ : BackendScope[Props, State]) {
     def init: Callback =
-      $.props.map(p =>
-        Callback.future[Unit] {
-          Article.Articles.map(a => $.modState(_.copy(articles = a)))
-        }.runNow()
-      )
+      $.props.map { _ =>
+        Callback
+          .future[Unit] {
+            Article.Articles.map(a => $.modState(_.copy(articles = a)))
+          }
+          .runNow()
+      }
 
     def render(props: Props, state: State) =
-      <.div(BlaarghBootstrapCSS.cardCols,
+      <.div(
+        BlaarghBootstrapCSS.cardCols,
         state.articles.map(a => ArticleCard(a, props.ctl)).toVdomArray
       )
   }
 
-  val component = ScalaComponent.builder[Props]("ArticleCardList")
+  val component = ScalaComponent
+    .builder[Props]("ArticleCardList")
     .initialStateFromProps(p => State(Seq.empty, p.ctl))
     .renderBackend[Backend]
     .componentWillMount($ => $.backend.init)

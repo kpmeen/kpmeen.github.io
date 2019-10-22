@@ -1,5 +1,5 @@
 /**
- * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+ * Copyright(c) 2019 Knut Petter Meen, all rights reserved.
  */
 package net.scalytica.blaargh.styles
 
@@ -11,22 +11,22 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
   import dsl._
 
   object Mixins {
-    val container = mixin(addClassName("container"))
-    val containerFluid = mixin(addClassName("container-fluid"))
-    val row = mixin(addClassName("row"))
-    val card = mixin(addClassName("card"))
-    val cardCols = mixin(addClassName("card-columns"))
-    val cardBlock = mixin(addClassName("card-block"))
-    val cardTitle = mixin(addClassName("card-title"))
-    val cardText = mixin(addClassName("card-text"))
-    val imgCircle = mixin(addClassName("img-circle"))
-    val centerBlock = mixin(addClassName("center-block"))
-    val textMuted = mixin(addClassName("text-muted"))
-    val textXsRight = mixin(addClassName("text-xs-right"))
-    val textXsCenter = mixin(addClassName("text-xs-center"))
+    val container         = mixin(addClassName("container"))
+    val containerFluid    = mixin(addClassName("container-fluid"))
+    val row               = mixin(addClassName("row"))
+    val card              = mixin(addClassName("card"))
+    val cardCols          = mixin(addClassName("card-columns"))
+    val cardBlock         = mixin(addClassName("card-block"))
+    val cardTitle         = mixin(addClassName("card-title"))
+    val cardText          = mixin(addClassName("card-text"))
+    val imgCircle         = mixin(addClassName("img-circle"))
+    val centerBlock       = mixin(addClassName("center-block"))
+    val textMuted         = mixin(addClassName("text-muted"))
+    val textXsRight       = mixin(addClassName("text-xs-right"))
+    val textXsCenter      = mixin(addClassName("text-xs-center"))
     val navbarFixedBottom = mixin(addClassName("navbar-fixed-bottom"))
-    val labelDefault = mixin(addClassNames("label", "label-default"))
-    val labelInfo = mixin(addClassNames("label", "label-info"))
+    val labelDefault      = mixin(addClassNames("label", "label-default"))
+    val labelInfo         = mixin(addClassNames("label", "label-info"))
 
     val cardShadow = mixin(
       boxShadow := "3px 3px 6px 0px rgba(173,173,173,0.6)"
@@ -110,20 +110,20 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
     )
   )
 
-  val container = style("blaargh-container")(Mixins.container)
+  val container      = style("blaargh-container")(Mixins.container)
   val containerFluid = style("blaargh-container-fluid")(Mixins.containerFluid)
-  val row = style("blaargh-row")(Mixins.row)
-  val col = styleF.int(1 to 12)(size => addClassName(s"col-xs-$size"))
-  val card = style("blaargh-card")(Mixins.card)
-  val cardCols = style("blaargh-card-columns")(Mixins.cardCols)
-  val cardBlock = style("blaargh-card-block")(Mixins.cardBlock)
-  val cardTitle = style("blaargh-card-title")(Mixins.cardTitle)
-  val cardText = style("blaargh-card-text")(Mixins.cardText)
-  val imgCircle = style("blaargh-img-circle")(Mixins.imgCircle)
-  val centerBlock = style("blaargh-center-block")(Mixins.centerBlock)
-  val textMuted = style("blaargh-text-muted")(Mixins.textMuted)
-  val textXsRight = style("blaargh-text-xs-right")(Mixins.textXsRight)
-  val textXsCenter = style("blaargh-text-xs-center")(Mixins.textXsCenter)
+  val row            = style("blaargh-row")(Mixins.row)
+  val col            = styleF.int(1 to 12)(size => addClassName(s"col-xs-$size")) // scalastyle:ignore
+  val card           = style("blaargh-card")(Mixins.card)
+  val cardCols       = style("blaargh-card-columns")(Mixins.cardCols)
+  val cardBlock      = style("blaargh-card-block")(Mixins.cardBlock)
+  val cardTitle      = style("blaargh-card-title")(Mixins.cardTitle)
+  val cardText       = style("blaargh-card-text")(Mixins.cardText)
+  val imgCircle      = style("blaargh-img-circle")(Mixins.imgCircle)
+  val centerBlock    = style("blaargh-center-block")(Mixins.centerBlock)
+  val textMuted      = style("blaargh-text-muted")(Mixins.textMuted)
+  val textXsRight    = style("blaargh-text-xs-right")(Mixins.textXsRight)
+  val textXsCenter   = style("blaargh-text-xs-center")(Mixins.textXsCenter)
   val labelInfo = style("blaargh-label-info")(
     Mixins.labelInfo,
     padding(.2 em),

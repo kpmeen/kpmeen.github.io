@@ -1,5 +1,5 @@
 /**
- * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+ * Copyright(c) 2019 Knut Petter Meen, all rights reserved.
  */
 package net.scalytica.blaargh.pages
 
@@ -54,66 +54,93 @@ object AboutPage {
     )
   }
 
-  class Backend($: BackendScope[Props, State]) {
+  class Backend($ : BackendScope[Props, State]) {
     def init: Callback = {
-      $.props.map(p =>
-        Callback[Unit] {
-          loadPage.map { page =>
-            $.modState(_.copy(conf = p.siteConf, content = page))
+      $.props.map { p =>
+        Callback
+          .future[Unit] {
+            loadPage.map { page =>
+              $.modState(_.copy(conf = p.siteConf, content = page))
+            }
           }
-        }.runNow()
-      )
+          .runNow()
+      }
     }
 
     def loadPage: Future[Option[String]] =
-      Ajax.get(url = "pages/about.html").map(xhr =>
+      Ajax.get(url = "pages/about.html").map { xhr =>
         xhr.status match {
           case ok: Int if ok == 200 => Some(xhr.responseText)
-          case _ => None
+          case _                    => None
         }
-      )
+      }
+
+    // scalastyle:off magic.number method.length
 
     def render(props: Props, state: State) = {
-      <.div(BlaarghBootstrapCSS.container,
-        <.div(BlaarghBootstrapCSS.row,
-          <.div(BlaarghBootstrapCSS.col(8),
-            <.div(BlaarghBootstrapCSS.container,
-              ^.dangerouslySetInnerHtml := state.content.map(c => c).getOrElse("")
+      <.div(
+        BlaarghBootstrapCSS.container,
+        <.div(
+          BlaarghBootstrapCSS.row,
+          <.div(
+            BlaarghBootstrapCSS.col(8),
+            <.div(
+              BlaarghBootstrapCSS.container,
+              ^.dangerouslySetInnerHtml := state.content
+                .map(c => c)
+                .getOrElse("")
             )
           ),
-          <.div(BlaarghBootstrapCSS.col(4),
-            <.div(Styles.profileCard,
+          <.div(
+            BlaarghBootstrapCSS.col(4),
+            <.div(
+              Styles.profileCard,
               <.img(
                 Styles.centeredAvatar,
-                ^.src := StringUtils.asOption(state.conf.owner.avatar).getOrElse("assets/images/default_avatar.png")
+                ^.src := StringUtils
+                  .asOption(state.conf.owner.avatar)
+                  .getOrElse("assets/images/default_avatar.png")
               ),
-              <.div(BlaarghBootstrapCSS.cardBlock,
+              <.div(
+                BlaarghBootstrapCSS.cardBlock,
                 <.h4(BlaarghBootstrapCSS.cardTitle, state.conf.owner.name),
                 <.p(BlaarghBootstrapCSS.cardText, state.conf.owner.bio),
-                <.p(BlaarghBootstrapCSS.cardText,
-                  StringUtils.asOption(state.conf.owner.email).map(email =>
-                    <.a(
-                      Styles.authorSocial,
-                      ^.href := s"mailto:$email",
-                      <.i(^.className := "fa fa-envelope")
+                <.p(
+                  BlaarghBootstrapCSS.cardText,
+                  StringUtils
+                    .asOption(state.conf.owner.email)
+                    .map(
+                      email =>
+                        <.a(
+                          Styles.authorSocial,
+                          ^.href := s"mailto:$email",
+                          <.i(^.className := "fa fa-envelope")
+                      )
                     )
-                  ).getOrElse(EmptyVdom),
-                  StringUtils.asOption(state.conf.owner.twitter).map(twitter =>
-                    <.a(
-                      Styles.authorSocial,
-                      ^.href := s"http://twitter.com/$twitter",
-                      ^.target := "_blank",
-                      <.i(^.className := "fa fa-twitter")
+                    .getOrElse(EmptyVdom),
+                  StringUtils
+                    .asOption(state.conf.owner.twitter)
+                    .map(
+                      twitter =>
+                        <.a(
+                          Styles.authorSocial,
+                          ^.href := s"http://twitter.com/$twitter",
+                          ^.target := "_blank",
+                          <.i(^.className := "fa fa-twitter")
+                      )
                     )
-                  ).getOrElse(EmptyVdom),
-                  StringUtils.asOption(state.conf.owner.github).map(github =>
-                    <.a(
-                      Styles.authorSocial,
-                      ^.href := s"http://github.com/${state.conf.owner.github}",
-                      ^.target := "_blank",
-                      <.i(^.className := "fa fa-github")
-                    )
-                  ).getOrElse(EmptyVdom)
+                    .getOrElse(EmptyVdom),
+                  StringUtils
+                    .asOption(state.conf.owner.github)
+                    .map { github =>
+                      <.a(
+                        Styles.authorSocial,
+                        ^.href := s"http://github.com/$github",
+                        ^.target := "_blank",
+                        <.i(^.className := "fa fa-github")
+                      )
+                    }
+                    .getOrElse(EmptyVdom)
                 )
               )
             )
@@ -121,10 +148,13 @@ object AboutPage {
         )
       )
     }
+
+    // scalastyle:on magic.number method.length
   }
 
-  val component = ScalaComponent.builder[Props]("About")
-    .initialStateFromProps(p => State(Config.empty, None))
+  val component = ScalaComponent
+    .builder[Props]("About")
+    .initialStateFromProps(_ => State(Config.empty, None))
     .renderBackend[Backend]
     .componentWillMount(_.backend.init)
     .build

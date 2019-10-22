@@ -1,5 +1,5 @@
 /**
- * Copyright(c) 2016 Knut Petter Meen, all rights reserved.
+ * Copyright(c) 2019 Knut Petter Meen, all rights reserved.
  */
 package net.scalytica.blaargh.components
 
@@ -15,13 +15,15 @@ object Label {
 
   case class Props(lbl: String, ctl: RouterCtl[View])
 
-  val component = ScalaComponent.builder[Props]("Label")
+  val component = ScalaComponent
+    .builder[Props]("Label")
     .initialStateFromProps(p => p)
     .render { $ =>
       <.span(
         BlaarghBootstrapCSS.labelDefault,
         ^.cursor.pointer,
-        ^.onClick --> $.state.ctl.byPath.set(Filter(FilterCriteria("label", $.props.lbl)).asPath),
+        ^.onClick --> $.state.ctl.byPath
+          .set(Filter(FilterCriteria("label", $.props.lbl)).asPath),
         $.props.lbl
       )
     }
