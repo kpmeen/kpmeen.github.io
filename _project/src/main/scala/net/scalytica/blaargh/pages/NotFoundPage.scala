@@ -7,14 +7,14 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 
-import scalacss.ProdDefaults._
+import net.scalytica.blaargh.CssSettings._
 import scalacss.ScalaCssReact._
 import scalacss.internal.StyleA
 
 object NotFoundPage {
 
-  val combStyle
-    : StyleA = BlaarghBootstrapCSS.container + BlaarghBootstrapCSS.textXsCenter
+  val combStyle: StyleA =
+    BlaarghBootstrapCSS.container + BlaarghBootstrapCSS.textXsCenter
 
   val component = ScalaComponent
     .builder[Unit]("NotFoundPage")

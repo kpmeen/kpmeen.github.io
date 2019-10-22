@@ -3,7 +3,7 @@
  */
 package net.scalytica.blaargh.styles
 
-import scalacss.ProdDefaults._
+import net.scalytica.blaargh.CssSettings._
 import scalacss.internal.Attr
 
 object BaseCSS extends StyleSheet.Inline {

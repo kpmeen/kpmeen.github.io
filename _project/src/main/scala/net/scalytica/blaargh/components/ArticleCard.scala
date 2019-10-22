@@ -11,7 +11,7 @@ import net.scalytica.blaargh.models.Article
 import net.scalytica.blaargh.pages.Views.{Filter, FilterCriteria, Posts, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import net.scalytica.blaargh.utils.StringUtils._
-import scalacss.ProdDefaults._
+import net.scalytica.blaargh.CssSettings._
 import scalacss.ScalaCssReact._
 
 object ArticleCard {
@@ -52,9 +52,7 @@ object ArticleCard {
 
   class Backend($ : BackendScope[Props, Unit]) {
 
-    def maybeTitle(
-        props: Props
-    )(content: TagMod => TagMod): TagMod =
+    def maybeTitle(props: Props)(content: TagMod => TagMod): TagMod =
       asOption(props.article.title).map { title =>
         content(
           <.a(

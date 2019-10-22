@@ -17,7 +17,7 @@ object Label {
 
   val component = ScalaComponent
     .builder[Props]("Label")
-    .initialStateFromProps(p => p)
+    .initialStateFromProps(identity)
     .render { $ =>
       <.span(
         BlaarghBootstrapCSS.labelDefault,

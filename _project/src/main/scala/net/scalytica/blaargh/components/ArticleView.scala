@@ -14,7 +14,7 @@ import org.scalajs.dom.document
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js.Dynamic.global
-import scalacss.ProdDefaults._
+import net.scalytica.blaargh.CssSettings._
 import scalacss.ScalaCssReact._
 
 object ArticleView {
@@ -48,15 +48,14 @@ object ArticleView {
 
   class Backend($ : BackendScope[Props, State]) {
 
-    def init: Callback =
-      $.props.map[Unit] { p =>
-        for {
-          metadata <- p.article
-          content  <- Article.get(p.ref)
-        } yield {
-          $.setState(State(metadata, content)).runNow()
-        }
+    def init: Callback = $.props.map[Unit] { p =>
+      for {
+        metadata <- p.article
+        content  <- Article.get(p.ref)
+      } yield {
+        $.setState(State(metadata, content)).runNow()
       }
+    }
 
     def highlight = $.state.map { s =>
       s.content.foreach { _ =>

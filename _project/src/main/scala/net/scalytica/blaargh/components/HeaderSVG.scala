@@ -8,9 +8,10 @@ import japgolly.scalajs.react.vdom.svg_<^._
 import net.scalytica.blaargh.models.Config
 
 import java.nio.charset.StandardCharsets
-import scalacss.ProdDefaults._
+import net.scalytica.blaargh.CssSettings._
 import scalacss.ScalaCssReact._
 
+// scalastyle:off magic.number
 object HeaderSVG {
 
   object Styles extends StyleSheet.Inline {

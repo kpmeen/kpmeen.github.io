@@ -61,7 +61,7 @@ object App {
         })
         .notFound(_ => redirectToPage(NotFound)(Redirect.Replace))
         .renderWith((ctl, r) => layout(cfg)(ctl, r))
-  }
+    }
 
   val router = (cfg: Config) => Router(StaticConfig.baseUrl, routerConfig(cfg))
 

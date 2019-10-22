@@ -4,8 +4,9 @@
 package net.scalytica.blaargh.styles
 
 import scala.concurrent.duration._
-import scalacss.ProdDefaults._
+import net.scalytica.blaargh.CssSettings._
 
+// scalastyle:off magic.number
 object BlaarghBootstrapCSS extends StyleSheet.Inline {
 
   import dsl._
@@ -57,7 +58,7 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
     minHeight(20 em),
     backgroundImage := "url(assets/images/banner.png)",
     backgroundSize := "cover",
-    backgroundRepeat := "no-repeat",
+    backgroundRepeat.noRepeat,
     backgroundPosition := "center",
     marginBottom(20 px),
     width(100 %%),

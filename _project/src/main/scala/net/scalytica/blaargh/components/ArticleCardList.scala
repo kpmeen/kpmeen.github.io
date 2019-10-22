@@ -20,14 +20,14 @@ object ArticleCardList {
   case class State(articles: Seq[Article], ctl: RouterCtl[View])
 
   class Backend($ : BackendScope[Props, State]) {
-    def init: Callback =
-      $.props.map { _ =>
-        Callback
-          .future[Unit] {
-            Article.Articles.map(a => $.modState(_.copy(articles = a)))
-          }
-          .runNow()
-      }
+
+    def init: Callback = $.props.map { _ =>
+      Callback
+        .future[Unit] {
+          Article.Articles.map(a => $.modState(_.copy(articles = a)))
+        }
+        .runNow()
+    }
 
     def render(props: Props, state: State) =
       <.div(
@@ -40,7 +40,7 @@ object ArticleCardList {
     .builder[Props]("ArticleCardList")
     .initialStateFromProps(p => State(Seq.empty, p.ctl))
     .renderBackend[Backend]
-    .componentWillMount($ => $.backend.init)
+    .componentWillMount(_.backend.init)
     .build
 
   def apply(ctl: RouterCtl[View]) = component(Props(ctl))

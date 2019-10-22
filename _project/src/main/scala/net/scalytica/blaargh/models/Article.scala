@@ -32,17 +32,16 @@ case class Article(
 
 object Article {
 
-  lazy val Articles = fetchAll
+  lazy val Articles: Future[Seq[Article]] = fetchAll
 
   implicit val formats: OFormat[Article] = Json.format[Article]
 
-  def get(a: ArticleRef) =
-    Ajax.get(url = a.htmlFilePath).map { xhr =>
-      xhr.status match {
-        case ok: Int if ok == 200 => Some(xhr.responseText)
-        case _                    => None
-      }
+  def get(a: ArticleRef) = Ajax.get(url = a.htmlFilePath).map { xhr =>
+    xhr.status match {
+      case ok: Int if ok == 200 => Some(xhr.responseText)
+      case _                    => None
     }
+  }
 
   def fetchAll: Future[Seq[Article]] =
     Ajax

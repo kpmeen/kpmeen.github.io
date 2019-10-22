@@ -3,6 +3,7 @@
  */
 package net.scalytica.blaargh.models
 
+import net.scalytica.blaargh.utils.StaticConfig
 import org.scalajs.dom.ext.Ajax
 
 import scala.concurrent.Future
@@ -26,7 +27,7 @@ case class Owner(
 )
 
 object Owner {
-  val empty = Owner(
+  val empty: Owner = Owner(
     name = "",
     avatar = "",
     bio = "",
@@ -46,7 +47,7 @@ case class Config(
 
 object Config {
 
-  val empty = Config(
+  val empty: Config = Config(
     siteTitle = "",
     authors = Seq.empty,
     owner = Owner.empty
@@ -57,13 +58,14 @@ object Config {
   implicit val confFormat: OFormat[Config] = Json.format[Config]
 
   def load(): Future[Config] =
-    Ajax.get(url = "config/config.json").map { xhr =>
-      xhr.status match {
-        case ok: Int if ok == 200 =>
-          val js = Json.parse(xhr.responseText)
-          Json.fromJson[Config](js).getOrElse(empty)
-        case _ => empty
-      }
+    Ajax.get(url = s"${StaticConfig.baseUrl.value}config/config.json").map {
+      xhr =>
+        xhr.status match {
+          case ok: Int if ok == 200 =>
+            val js = Json.parse(xhr.responseText)
+            Json.fromJson[Config](js).getOrElse(empty)
+          case _ => empty
+        }
     }
 
 }

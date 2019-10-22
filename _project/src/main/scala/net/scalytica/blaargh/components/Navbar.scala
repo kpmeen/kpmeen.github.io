@@ -8,12 +8,11 @@ import japgolly.scalajs.react.extra._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.PackageBase.VdomAttr
 import japgolly.scalajs.react.vdom.html_<^._
+import net.scalytica.blaargh.CssSettings._
 import net.scalytica.blaargh.models.Config
 import net.scalytica.blaargh.pages.Views.{About, Home, Posts, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import org.scalajs.dom
-
-import scalacss.ProdDefaults._
 import scalacss.ScalaCssReact._
 
 object Navbar {
@@ -30,13 +29,12 @@ object Navbar {
     val blaarghNavbarLink =
       style("blaargh-navbar-link")(addClassName("nav-link"))
 
-    val blaarghNavItem = styleF("blaargh-nav-item").bool(
-      isActive =>
-        styleS(
-          if (isActive) addClassNames("nav-item", "active")
-          else addClassName("nav-item")
+    val blaarghNavItem = styleF("blaargh-nav-item").bool { isActive =>
+      styleS(
+        if (isActive) addClassNames("nav-item", "active")
+        else addClassName("nav-item")
       )
-    )
+    }
 
     val navActiveHamburger = style(addClassName("sr-only"))
 
@@ -132,7 +130,7 @@ object Navbar {
             <.a(
               Styles.blaarghBrand,
               ^.href := "_",
-              ^.onClick ==> { (e: ReactEventFromInput) =>
+              ^.onClick ==> { e: ReactEventFromInput =>
                 e.preventDefaultCB >> props.ctl.set(Home)
               },
               s"${props.siteConfig.siteTitle.toUpperCase}"

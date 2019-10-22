@@ -12,7 +12,7 @@ import org.scalajs.dom.ext.Ajax
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-import scalacss.ProdDefaults._
+import net.scalytica.blaargh.CssSettings._
 import scalacss.ScalaCssReact._
 
 object AboutPage {
@@ -55,16 +55,15 @@ object AboutPage {
   }
 
   class Backend($ : BackendScope[Props, State]) {
-    def init: Callback = {
-      $.props.map { p =>
-        Callback
-          .future[Unit] {
-            loadPage.map { page =>
-              $.modState(_.copy(conf = p.siteConf, content = page))
-            }
+
+    def init: Callback = $.props.map { p =>
+      Callback
+        .future[Unit] {
+          loadPage.map { page =>
+            $.modState(_.copy(conf = p.siteConf, content = page))
           }
-          .runNow()
-      }
+        }
+        .runNow()
     }
 
     def loadPage: Future[Option[String]] =
@@ -115,7 +114,7 @@ object AboutPage {
                           Styles.authorSocial,
                           ^.href := s"mailto:$email",
                           <.i(^.className := "fa fa-envelope")
-                      )
+                        )
                     )
                     .getOrElse(EmptyVdom),
                   StringUtils
@@ -127,7 +126,7 @@ object AboutPage {
                           ^.href := s"http://twitter.com/$twitter",
                           ^.target := "_blank",
                           <.i(^.className := "fa fa-twitter")
-                      )
+                        )
                     )
                     .getOrElse(EmptyVdom),
                   StringUtils

@@ -24,10 +24,7 @@ object SearchResultsPage {
 
     def init: Callback =
       $.props.map[Unit] { _ =>
-        Article.Articles.map { a =>
-          // Set the state once and for all
-          $.setState(State(a)).runNow()
-        }
+        Article.Articles.map(a => $.setState(State(a)).runNow())
       }
 
     def render(props: Props, state: State) =
@@ -61,7 +58,7 @@ object SearchResultsPage {
 
   val component = ScalaComponent
     .builder[Props]("SearchResultsPage")
-    .initialStateFromProps(p => State())
+    .initialStateFromProps(_ => State())
     .renderBackend[Backend]
     .componentDidMount(_.backend.init)
     .build
