@@ -9,7 +9,7 @@ I've been developing software in some form or other since the turn of the millen
 Most of my career has been as an in-house architect/developer.
 I consider myself to be a "full-stack" developer. But my main responsibilities have typically been architecture and development on the server-side of things.
 
-As the years have gone by, my frustrations with Java and its extremely verbose and convoluted ways have grown more and more. Then, a few years ago, i discovered [Scala](http://scala-lang.org) and functional programming. Since then I've fallen deeper and deeper into the rabbit hole. These days, when I write code, I prefer Scala. A language that I've grown to like quite a lot...warts and all. It has even brought back the fun in writing client side code, thanks to [Scala-JS](http://scala-js.org).
+As the years have gone by, my frustrations with Java and its extremely verbose and convoluted ways have grown more and more. Then, a few years ago, i discovered [Scala](http://scala-lang.org) and functional programming. Since then I've fallen deeper and deeper into the rabbit hole. These days, when I write code, I prefer Scala. A language that I've grown to like quite a lot...warts and all. It has even brought back the fun in writing client side code, thanks to [Scala.js](http://scala-js.org).
 
 ## Private
 
