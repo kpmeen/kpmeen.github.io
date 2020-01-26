@@ -1,7 +1,7 @@
 if (document.referrer.match(/^https:\/\/www\.youtube\.com/)){
-  hide("overlayfull");
+  hide("theater_overlayfull");
 }else{
-  show("overlayfull");
+  show("theater_overlayfull");
 }
 
 const node = document.getElementById("path");
@@ -16,21 +16,21 @@ function goFullScreen() {
   if (document.cookie == 'noshow'){
     goFullScreenYoutube();
   } else {
-    show("overlayfullscreen");
+    show("theater_overlayfullscreen");
     setTimeout(() => { goFullScreenYoutube() }, 5000);
   }
 }
 
 function goFullScreenYoutube() {
     location.href='https://www.youtube.com/redirect?q=https://scalytica.net/#theater';
-    setTimeout(() => { hide("overlayfullscreen") }, 5000);
+    setTimeout(() => { hide("theater_overlayfullscreen") }, 5000);
 }
 function showLoader() {
-  show("loader");
-  setTimeout(() => { hide("loader") }, 5000);
+  show("theater_loader");
+  setTimeout(() => { hide("theater_loader") }, 5000);
 }
 function showOverlay() {
-  show("overlay");
+  show("theater_overlay");
   node.focus();
   node.setSelectionRange(200, 200);
 }
