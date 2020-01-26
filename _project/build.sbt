@@ -32,7 +32,7 @@ onChangedBuildSource in Global := ReloadOnSourceChanges
 updateOptions := updateOptions.value.withCachedResolution(true)
 
 // Dependency management...
-val scalaJSReactVersion  = "1.4.2"
+val scalaJSReactVersion  = "1.6.0"
 val scalaCssVersion      = "0.5.6"
 val scalaJsDomVersion    = "0.9.7"
 val scalaJsJQueryVersion = "0.9.5"
