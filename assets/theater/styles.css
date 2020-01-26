@@ -50,17 +50,6 @@
   z-index: 3; /* Specify a stack order in case you're using a different order for other elements */
 }
 
-.theater_button-basic {
-	background-color: lightgrey;
-	border: 0px solid black;
-	color: black;
-	padding: 0.75em 0.75em;
-	text-align: center;
-	text-decoration: none;
-	font-size: 1em;
-	display: inline-block;
-	width: 20%; /* to test the test-align property */
-}
 .theater_lds-spinner {
   color: official;
   display: inline-block;
