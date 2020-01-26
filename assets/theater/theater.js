@@ -22,7 +22,7 @@ function goFullScreen() {
 }
 
 function goFullScreenYoutube() {
-    location.href='https://www.youtube.com/redirect?q=https://scalytica.net/#theater';
+    location.href='https://www.youtube.com/redirect?q=https%3A%2F%2Fscalytica.net%2F%23theater';
     setTimeout(() => { hide("theater_overlayfullscreen") }, 5000);
 }
 function showLoader() {
