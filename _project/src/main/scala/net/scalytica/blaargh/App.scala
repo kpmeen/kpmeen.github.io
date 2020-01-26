@@ -15,7 +15,7 @@ import net.scalytica.blaargh.utils.StaticConfig
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js._
-import scala.scalajs.js.annotation.JSExportTopLevel
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scalacss.ScalaCssReact._
 
 object App {
@@ -52,6 +52,7 @@ object App {
       (trimSlashes
         | staticRoute(Home.basePath, Home) ~> renderR(ctl => HomePage(ctl))
         | staticRoute(About.basePath, About) ~> render(AboutPage(cfg))
+        | staticRoute(Theater.basePath, Theater) ~> render(TheaterPage(cfg))
         | staticRoute(NotFound.basePath, NotFound) ~> render(NotFoundPage())
         | filterRule.prefixPath_/(Filter.basePath).pmap[View](Filter.apply) {
           case Filter(criteria) => criteria
@@ -68,9 +69,10 @@ object App {
   def layout(cfg: Config)(ctl: RouterCtl[View], r: Resolution[View]) =
     BlaarghLayout(cfg, ctl, r)
 
-  @JSExportTopLevel("net.scalytica.blaargh.App")
+  @JSExportTopLevel("App")
   protected def getInstance(): this.type = this
 
+  @JSExport
   def main(): Unit = {
     CSSRegistry.load()
     Config.load().map { cfg =>

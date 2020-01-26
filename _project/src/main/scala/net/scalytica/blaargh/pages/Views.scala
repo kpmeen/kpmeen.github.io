@@ -22,6 +22,10 @@ object Views {
     override val basePath = s"${StaticConfig.PathPrefix}about"
   }
 
+  case object Theater extends View with ViewType {
+    override val basePath = s"${StaticConfig.PathPrefix}theater"
+  }
+
   case object NotFound extends View with ViewType {
     override val basePath = s"${StaticConfig.PathPrefix}notfound"
   }
