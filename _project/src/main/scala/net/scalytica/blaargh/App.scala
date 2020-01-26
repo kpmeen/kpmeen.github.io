@@ -41,7 +41,7 @@ object App {
 
     dynamicRouteCT((string(slash) / string(all)).caseClass[FilterCriteria]) ~>
       dynRenderR { (lbl, ctl) =>
-        SearchResultsPage(lbl, ctl.contramap[View](v => lbl))
+        SearchResultsPage(lbl, ctl.contramap[View](_ => lbl))
       }
   }
 

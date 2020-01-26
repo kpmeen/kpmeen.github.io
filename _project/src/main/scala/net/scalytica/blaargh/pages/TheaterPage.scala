@@ -9,6 +9,7 @@ import net.scalytica.blaargh.CssSettings._
 import net.scalytica.blaargh.models.Config
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import net.scalytica.blaargh.utils.StringUtils
+import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
 import scalacss.ScalaCssReact._
 
@@ -25,32 +26,17 @@ object TheaterPage {
 
     import dsl._
 
-    val profileCard = style("blaargh-profile-card")(
-      BlaarghBootstrapCSS.Mixins.card,
+    val theaterContainer = style("blaargh-theater-card")(
+      BlaarghBootstrapCSS.Mixins.containerFluid,
       addClassName("text-xs-center"),
       border.`0`,
       boxShadow := "none"
     )
 
-    val centeredAvatar = style("blaarg-profile-avatar")(
-      BlaarghBootstrapCSS.Mixins.imgCircle,
+    val theaterLogo = style("blaarg-theater-logo")(
       BlaarghBootstrapCSS.Mixins.centerBlock,
-      height(120.px)
-    )
-
-    val authorSocial = style("blaargh-author-social")(
-      fontSize(1.2.em),
-      marginBottom(5.px),
-      color.black,
-      unsafeChild(".fa")(
-        marginRight(5.px)
-      ),
-      lineHeight(47 px),
-      transitionProperty := "font-size",
-      BlaarghBootstrapCSS.Mixins.easeOutAnimation,
-      &.hover(
-        fontSize(1.5.em)
-      )
+      height(120.px),
+      width(120.px)
     )
   }
 
@@ -77,18 +63,35 @@ object TheaterPage {
     // scalastyle:off magic.number method.length
 
     def render(props: Props, state: State) = {
+      def redirectHack() = Callback[Unit] {
+        dom.window.location.href = state.conf.theaterConfig.redirectUrl
+      }
+
       <.div(
         BlaarghBootstrapCSS.container,
-        <.div(
-          BlaarghBootstrapCSS.row,
-          <.div(
-            BlaarghBootstrapCSS.col(8),
+        Styles.theaterContainer,
+        if (state.conf.theaterConfig.streamingServices.nonEmpty) {
+          state.conf.theaterConfig.streamingServices.map { ss =>
             <.div(
-              BlaarghBootstrapCSS.container,
-              ^.dangerouslySetInnerHtml := state.content
-                .map(c => c)
-                .getOrElse("")
+              <.a(
+                ^.href := ss.url,
+                <.figure(
+                  ^.cls := "theater_figure",
+                  <.img(
+                    Styles.theaterLogo,
+                    ^.src := ss.logoImage
+                  )
+                )
+              )
             )
+          }.toVdomArray
+        } else {
+          <.span("There are no services in the config!")
+        },
+        <.div(
+          <.button(
+            ^.onClick --> redirectHack(),
+            "ENABLE FULLSCREEN"
           )
         )
       )
@@ -99,9 +102,8 @@ object TheaterPage {
 
   val component = ScalaComponent
     .builder[Props]("Theater")
-    .initialStateFromProps(_ => State(Config.empty, None))
+    .initialStateFromProps(p => State(p.siteConf, None))
     .renderBackend[Backend]
-    .componentWillMount(_.backend.init)
     .build
 
   def apply(conf: Config) = component(Props(conf))

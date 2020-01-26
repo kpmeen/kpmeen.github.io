@@ -88,7 +88,7 @@ object ArticleView {
                   s"Written by ${a.author} on ${a.asJsDate.toDateString()}"
                 ),
                 <.span(^.marginLeft := "2rem", a.labels.map { l =>
-                  Label(l, props.ctl.contramap[View](v => props.ref))
+                  Label(l, props.ctl.contramap[View](_ => props.ref))
                 }.toVdomArray)
               )
             }.getOrElse(EmptyVdom),

@@ -10,7 +10,7 @@ import japgolly.scalajs.react.vdom.PackageBase.VdomAttr
 import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.CssSettings._
 import net.scalytica.blaargh.models.Config
-import net.scalytica.blaargh.pages.Views.{About, Home, Posts, View}
+import net.scalytica.blaargh.pages.Views.{About, Home, Posts, Theater, View}
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
 import org.scalajs.dom
 import scalacss.ScalaCssReact._
@@ -139,6 +139,7 @@ object Navbar {
               Styles.navbar,
               MenuItem(props, "BLOG", Home),
               MenuItem(props, "ABOUT", About)
+//              MenuItem(props, "THEATER", Theater)
             )
           )
         )
