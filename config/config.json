@@ -34,6 +34,11 @@
         "displayName": "Altibox",
         "url": "https://tv.altibox.net",
         "logoImage": "assets/theater/altibox.jpg"
+      },
+      {
+        "displayName": "NRK Super",
+        "url": "https://nrksuper.no",
+        "logoImage": "assets/theater/nrksuper.png"
       }
     ]
   }
