@@ -21,24 +21,24 @@
     "redirectUrl": "https://www.youtube.com/redirect?q=https%3A%2F%2Fscalytica.net%2F%23theater",
     "streamingServices": [
       {
-        "displayName": "NRK TV",
-        "url": "https://tv.nrk.no/",
-        "logoImage": "assets/theater/nrktv.jpg"
-      },
-      {
         "displayName": "HBO Nordic",
         "url": "https://no.hbonordic.com/",
         "logoImage": "assets/theater/hbonordic.jpg"
       },
       {
-        "displayName": "Altibox",
-        "url": "https://tv.altibox.net",
-        "logoImage": "assets/theater/altibox.jpg"
+        "displayName": "NRK TV",
+        "url": "https://tv.nrk.no/",
+        "logoImage": "assets/theater/nrktv.jpg"
       },
       {
         "displayName": "NRK Super",
         "url": "https://nrksuper.no",
         "logoImage": "assets/theater/nrksuper.png"
+      },
+      {
+        "displayName": "Altibox",
+        "url": "https://tv.altibox.net",
+        "logoImage": "assets/theater/altibox.jpg"
       }
     ]
   }
