@@ -60,7 +60,7 @@ object App {
         | postsRule.prefixPath_/(Posts.basePath).pmap[View](Posts.apply) {
           case Posts(ref) => ref
         })
-        .notFound(_ => redirectToPage(NotFound)(Redirect.Replace))
+        .notFound(_ => redirectToPage(NotFound)(SetRouteVia.HistoryReplace))
         .renderWith((ctl, r) => layout(cfg)(ctl, r))
     }
 
