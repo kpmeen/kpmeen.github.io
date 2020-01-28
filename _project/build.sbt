@@ -86,6 +86,8 @@ npmDependencies in Compile ++= Seq(
 // creates single js resource file for easy integration in html page
 skip in packageJSDependencies := false
 
+version in startWebpackDevServer := "3.10.1"
+
 val jsTarget = "../assets/js"
 
 lazy val fastBlaargh = taskKey[Unit]("Runs compile and webpack using fastOptJS")
