@@ -8,7 +8,6 @@ import japgolly.scalajs.react.vdom.html_<^._
 import net.scalytica.blaargh.CssSettings._
 import net.scalytica.blaargh.models.Config
 import net.scalytica.blaargh.styles.BlaarghBootstrapCSS
-import net.scalytica.blaargh.utils.StringUtils
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
 import scalacss.ScalaCssReact._
@@ -26,17 +25,48 @@ object TheaterPage {
 
     import dsl._
 
-    val theaterContainer = style("blaargh-theater-card")(
-      BlaarghBootstrapCSS.Mixins.containerFluid,
+    val theaterContainer = style("blaargh-theater-container")(
+      BlaarghBootstrapCSS.Mixins.container,
       addClassName("text-xs-center"),
       border.`0`,
       boxShadow := "none"
     )
 
-    val theaterLogo = style("blaarg-theater-logo")(
+    val streamingServiceRow = style("blaargh-streaming-service-row")(
+      BlaarghBootstrapCSS.Mixins.row,
+      display.flex,
+      marginLeft.auto,
+      marginRight.auto
+    )
+
+    val streamingServiceWrapper = style("blaargh-streaming-service-wrapper")(
+      padding(2.px),
+      height(200.px),
+      width(200.px),
+      display.flex,
+      marginLeft.auto,
+      marginRight.auto
+    )
+
+    val theaterLogoLink = style("blaargh-streaming-service--logo-link")(
+      display.flex,
+      margin.auto
+    )
+
+    val theaterLogo = style("blaargh-streaming-service-logo")(
       BlaarghBootstrapCSS.Mixins.centerBlock,
-      height(120.px),
-      width(120.px)
+      width(180.px),
+      display.block,
+      margin.auto
+    )
+
+    val fullscreenButtonWrapper = style("blaargh-fullscreen-wrapper")(
+      marginTop(60.px)
+    )
+
+    val fullscreenButton = style("blaargh-fullscreen-btn")(
+      BlaarghBootstrapCSS.Mixins.button,
+      BlaarghBootstrapCSS.Mixins.buttonPrimary
     )
   }
 
@@ -68,28 +98,39 @@ object TheaterPage {
       }
 
       <.div(
-        BlaarghBootstrapCSS.container,
         Styles.theaterContainer,
         if (state.conf.theaterConfig.streamingServices.nonEmpty) {
-          state.conf.theaterConfig.streamingServices.map { ss =>
-            <.div(
-              <.a(
-                ^.href := ss.url,
-                <.figure(
-                  ^.cls := "theater_figure",
-                  <.img(
-                    Styles.theaterLogo,
-                    ^.src := ss.logoImage
+          state.conf.theaterConfig.streamingServices
+            .grouped(4)
+            .map { grpd =>
+              <.div(
+                Styles.streamingServiceRow,
+                grpd.map { ss =>
+                  <.div(
+                    Styles.streamingServiceWrapper,
+                    BlaarghBootstrapCSS.col(4),
+                    <.a(
+                      Styles.theaterLogoLink,
+                      ^.href := ss.url,
+                      <.figure(
+                        <.img(
+                          Styles.theaterLogo,
+                          ^.src := ss.logoImage
+                        )
+                      )
+                    )
                   )
-                )
+                }.toVdomArray
               )
-            )
-          }.toVdomArray
+            }
+            .toVdomArray
         } else {
           <.span("There are no services in the config!")
         },
         <.div(
+          Styles.fullscreenButtonWrapper,
           <.button(
+            Styles.fullscreenButton,
             ^.onClick --> redirectHack(),
             "ENABLE FULLSCREEN"
           )
