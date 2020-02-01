@@ -36,6 +36,11 @@
         "logoImage": "assets/theater/nrksuper.png"
       },
       {
+        "displayName": "Amazon Prime UK",
+        "url": "https://www.amazon.co.uk/gp/video/storefront",
+        "logoImage": "assets/theater/prime.jpg"
+      },
+      {
         "displayName": "Altibox",
         "url": "https://tv.altibox.net",
         "logoImage": "assets/theater/altibox.jpg"
