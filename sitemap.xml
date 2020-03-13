@@ -16,6 +16,10 @@
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
     </url><url>
+      <loc>http://scalytica.net/#posts/2020-03-12/Running_ScalaSteward_with_GitLab_CI</loc>
+      <priority>.5</priority>
+      <changefreq>weekly</changefreq>
+    </url><url>
       <loc>http://scalytica.net/#posts/2014-09-13/introducing-clammyscan</loc>
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
