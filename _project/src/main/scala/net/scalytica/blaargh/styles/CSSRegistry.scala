@@ -4,7 +4,7 @@
 package net.scalytica.blaargh.styles
 
 import net.scalytica.blaargh.components._
-import net.scalytica.blaargh.pages.AboutPage
+import net.scalytica.blaargh.pages.{AboutPage, TheaterPage}
 import scalacss.ProdDefaults._
 import scalacss.internal.mutable.GlobalRegistry
 
@@ -18,7 +18,8 @@ object CSSRegistry {
       Navbar.Styles,
       ArticleCard.Styles,
       AboutPage.Styles,
-      ArticleView.Styles
+      ArticleView.Styles,
+      TheaterPage.Styles
     )
   }
 

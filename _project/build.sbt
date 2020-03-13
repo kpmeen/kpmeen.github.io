@@ -32,7 +32,7 @@ onChangedBuildSource in Global := ReloadOnSourceChanges
 updateOptions := updateOptions.value.withCachedResolution(true)
 
 // Dependency management...
-val scalaJSReactVersion  = "1.4.2"
+val scalaJSReactVersion  = "1.6.0"
 val scalaCssVersion      = "0.5.6"
 val scalaJsDomVersion    = "0.9.7"
 val scalaJsJQueryVersion = "0.9.5"
@@ -85,6 +85,8 @@ npmDependencies in Compile ++= Seq(
 
 // creates single js resource file for easy integration in html page
 skip in packageJSDependencies := false
+
+version in startWebpackDevServer := "3.10.1"
 
 val jsTarget = "../assets/js"
 

@@ -39,10 +39,26 @@ object Owner {
   )
 }
 
+case class StreamingService(
+    displayName: String,
+    url: String,
+    logoImage: String
+)
+
+case class TheaterConfig(
+    redirectUrl: String,
+    streamingServices: Seq[StreamingService]
+)
+
+object TheaterConfig {
+  val empty: TheaterConfig = TheaterConfig("", Seq.empty)
+}
+
 case class Config(
     siteTitle: String,
     authors: Seq[Author],
-    owner: Owner
+    owner: Owner,
+    theaterConfig: TheaterConfig
 )
 
 object Config {
@@ -50,11 +66,16 @@ object Config {
   val empty: Config = Config(
     siteTitle = "",
     authors = Seq.empty,
-    owner = Owner.empty
+    owner = Owner.empty,
+    theaterConfig = TheaterConfig.empty
   )
 
   implicit val authFormat: OFormat[Author] = Json.format[Author]
   implicit val ownrFormat: OFormat[Owner]  = Json.format[Owner]
+  implicit val strsFormat: OFormat[StreamingService] =
+    Json.format[StreamingService]
+  implicit val theaFormat: OFormat[TheaterConfig] = Json.format[TheaterConfig]
+
   implicit val confFormat: OFormat[Config] = Json.format[Config]
 
   def load(): Future[Config] =

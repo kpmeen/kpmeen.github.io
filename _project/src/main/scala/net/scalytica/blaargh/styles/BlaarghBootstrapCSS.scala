@@ -12,6 +12,8 @@ object BlaarghBootstrapCSS extends StyleSheet.Inline {
   import dsl._
 
   object Mixins {
+    val button            = mixin(addClassName("btn"))
+    val buttonPrimary     = mixin(addClassName("btn-primary"))
     val container         = mixin(addClassName("container"))
     val containerFluid    = mixin(addClassName("container-fluid"))
     val row               = mixin(addClassName("row"))
