@@ -1,6 +1,6 @@
 ---
 author: 
-ingress: 
+ingress: Recently I came across a very cool project on GitHub called ScalaSteward. And since I keep most of my projects on gitlab.com, where I rely on GitLab CI for automation, I wanted to see if I could get it running on GitLab CI on a nightly schedule. And this post is all about explaining the steps I took to get it up and running.
 date: 2020-03-12
 labels: [scalasteward, scala, gitlab, gitlab-ci]
 title: Running ScalaSteward with GitLab CI
