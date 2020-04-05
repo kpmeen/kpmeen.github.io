@@ -20,8 +20,7 @@ class BlaarghSerializer extends ToHtmlSerializer(new LinkRenderer) {
     if (!rendering.text.equals("")) {
       printAttribute("alt", rendering.text)
     }
-    import collection.JavaConversions._
-    for (attr <- rendering.attributes) {
+    for (attr <- rendering.attributes.asScala) {
       printAttribute(attr.name, attr.value)
     }
     printer.print(" style=\"max-width: 100%; max-height: 500px\"")

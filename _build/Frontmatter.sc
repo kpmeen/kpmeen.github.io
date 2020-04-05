@@ -89,7 +89,7 @@ object FrontMatter {
         d.toInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDate
       },
       ingress = smap.get(FMIngress).map(_.asInstanceOf[String]),
-      labels = smap.get(FMLabels).map(_.asInstanceOf[java.util.ArrayList[String]].asScala),
+      labels = smap.get(FMLabels).map(_.asInstanceOf[java.util.ArrayList[String]].asScala.toSeq),
       image = smap.get(FMImage).map(_.asInstanceOf[String]),
       misc = nonDefaultKeys
     )
