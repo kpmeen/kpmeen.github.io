@@ -1,62 +1,107 @@
-import $file.Common, Common._
-import $file.Frontmatter, Frontmatter._
-import $ivy.`org.pegdown:pegdown:1.6.0`
-import $ivy.`org.yaml:snakeyaml:1.17`
+import $file.Common
+import $file.Frontmatter
+import $ivy.`com.vladsch.flexmark:flexmark-all:0.61.0`
+import $ivy.`org.yaml:snakeyaml:1.26`
+import Common._
+import Frontmatter._
 import ammonite.ops._
-import org.pegdown.ast.{HeaderNode, SimpleNode, TableNode, TextNode, VerbatimNode}
-import org.pegdown.{Extensions, LinkRenderer, PegDownProcessor, ToHtmlSerializer}
+import com.vladsch.flexmark.ast._
+import com.vladsch.flexmark.ext.tables.{TableBlock, TableHead}
+import com.vladsch.flexmark.html.HtmlRenderer.HtmlRendererExtension
+import com.vladsch.flexmark.html.renderer.{
+  DelegatingNodeRendererFactory,
+  NodeRenderer,
+  NodeRendererContext,
+  NodeRenderingHandler
+}
+import com.vladsch.flexmark.html.{HtmlRenderer, HtmlWriter}
+import com.vladsch.flexmark.parser.Parser
+import com.vladsch.flexmark.util.ast.Document
+import com.vladsch.flexmark.util.data.{DataHolder, MutableDataHolder}
 import org.yaml.snakeyaml.Yaml
+
 import scala.collection.JavaConverters._
-import scala.collection.Map
 
 val yaml = new Yaml
-lazy val conf = yaml.load(read! configFile).asInstanceOf[java.util.Map[String, Any]].asScala
+lazy val conf = yaml.load(read ! configFile).asInstanceOf[java.util.Map[String, Any]].asScala
 
-class BlaarghSerializer extends ToHtmlSerializer(new LinkRenderer) {
-  override def printImageTag(rendering: LinkRenderer.Rendering) {
-    printer.print("<div style=\"text-align: center\"><img")
-    printAttribute("src", s"posts/${rendering.href}")
+class BlaarghSerializer {
 
-    if (!rendering.text.equals("")) {
-      printAttribute("alt", rendering.text)
-    }
-    for (attr <- rendering.attributes.asScala) {
-      printAttribute(attr.name, attr.value)
-    }
-    printer.print(" style=\"max-width: 100%; max-height: 500px\"")
-    printer.print(" /></div>")
+  object BlaarghNodeRenderer extends NodeRenderer with DelegatingNodeRendererFactory {
+
+    val imageRenderer = new NodeRenderingHandler(classOf[Image], {
+      (node: Image, ctx: NodeRendererContext, writer: HtmlWriter) =>
+        writer
+          .raw("""<div style="text-align: center">""")
+          .endsWithEOL()
+        writer
+          .indent()
+          .raw(s"""<img src="posts/${node.getUrl}" alt="${node.getText}" style="max-width: 100%; max-height: 500px;"/>""")
+          .endsWithEOL()
+        writer
+          .unIndent()
+          .raw("</div>")
+          .endsWithEOL()
+    })
+
+    val headerRenderer = new NodeRenderingHandler(classOf[Heading], {
+      (node: Heading, _: NodeRendererContext, writer: HtmlWriter) =>
+        val tag = s"h${node.getLevel}"
+        val anchor = sanitizeAnchor(node.getText.normalizeEOL())
+        node.setAnchorRefId(anchor)
+        writer.withAttr()
+        writer.tag(tag)
+        writer.attr("id", anchor)
+        writer.text(node.getText)
+        writer.closeTag(tag).endsWithEOL()
+    })
+
+    val tableRenderer = new NodeRenderingHandler(classOf[TableBlock], {
+      (node: TableBlock, ctx: NodeRendererContext, writer: HtmlWriter) =>
+        writer.attr("class", "table table-bordered table-striped")
+        writer
+          .srcPosWithEOL(node.getChars)
+          .withAttr()
+          .tagLineIndent("table", () => ctx.renderChildren(node))
+          .line()
+    })
+
+    val tableHeadRenderer = new NodeRenderingHandler(classOf[TableHead], {
+      (node: TableHead, ctx: NodeRendererContext, writer: HtmlWriter) =>
+        writer.attr("class", "thead-inverse")
+        writer
+          .withAttr()
+          .withCondIndent()
+          .tagLine("thead", () => ctx.renderChildren(node))
+    })
+
+    val renderingHandlers = new java.util.HashSet[NodeRenderingHandler[_]]
+    renderingHandlers.add(imageRenderer)
+    renderingHandlers.add(headerRenderer)
+    renderingHandlers.add(tableRenderer)
+    renderingHandlers.add(tableHeadRenderer)
+
+    override def getNodeRenderingHandlers = renderingHandlers
+
+    override def getDelegates = null // scalastyle:ignore
+
+    override def apply(dataHolder: DataHolder) = this
   }
 
-  override def visit(node: HeaderNode) = {
-    val tag = "h" + node.getLevel
+  object BlaarghHtmlExtensions extends HtmlRendererExtension {
+    override def rendererOptions(mutableDataHolder: MutableDataHolder) = {}
 
-    val id = node.getChildren.asScala.collect { case t: TextNode => t.getText }.mkString
-
-    val setId = s"id=${'"' + sanitizeAnchor(id) + '"'}"
-    printer.print(s"<$tag $setId>")
-    visitChildren(node)
-    printer.print(s"</$tag>")
-  }
-
-  override def visit(node: VerbatimNode) = {
-    printer.println().print("<pre><code class=\"" + node.getType + "\">")
-
-    var text = node.getText
-    // print HTML breaks for all initial newlines
-    while (text.charAt(0) == '\n') {
-      printer.print("<br/>")
-      text = text.substring(1)
+    override def extend(builder: HtmlRenderer.Builder, s: String) = {
+      builder.nodeRendererFactory(BlaarghNodeRenderer)
     }
-    printer.printEncoded(text)
-    printer.print("</code></pre>")
   }
 
-  override def visit(node: TableNode) = {
-    currentTableNode = node
-    printer.print("<table class=\"table table-bordered\">")
-    visitChildren(node)
-    printer.print("</table>")
-    currentTableNode = null
+  val opts = options
+    .set(Parser.EXTENSIONS, (mdExtensions :+ BlaarghHtmlExtensions).asJava)
+  val renderer = HtmlRenderer.builder(opts).indentSize(2).build()
+
+  def toHtml(doc: Document) = {
+    renderer.render(doc)
   }
 
   def sanitize(s: String): String = {
@@ -64,7 +109,7 @@ class BlaarghSerializer extends ToHtmlSerializer(new LinkRenderer) {
   }
 
   def sanitizeAnchor(s: String): String = {
-    s.split(" |-", -1).map(_.filter(_.isLetterOrDigit)).mkString(" - ").toLowerCase
+    s.split(" |-", -1).map(_.filter(_.isLetterOrDigit)).mkString("-").toLowerCase
   }
 }
 
@@ -87,33 +132,25 @@ object BlaarghParser {
     val split = for (filePath <- mdFiles) yield resolveName(filePath)
 
     for ((name, path) <- split.sortBy(_._1)) yield {
-      val processor = new PegDownProcessor(Extensions.FENCED_CODE_BLOCKS | Extensions.TABLES)
+      val processor = Parser.builder(options).build()
       val fileContent = if (hasFrontMatter) parseFrontMatter(read ! path) else (FrontMatter.empty, read ! path)
-      val ast = processor.parseMarkdown(fileContent._2.toArray)
-      val rawHtmlContent = new BlaarghSerializer().toHtml(ast)
+      val doc = processor.parse(fileContent._2)
+      val rawHtmlContent = new BlaarghSerializer().toHtml(doc)
 
-      val snippetNodes = ast.getChildren.asScala.takeWhile {
-        case n: SimpleNode if n.getType == SimpleNode.Type.HRule => false
-        case _ => true
-      }
-
-      ast.getChildren.clear()
-      snippetNodes.foreach(ast.getChildren.add)
-
-      val rawHtmlSnippet = new BlaarghSerializer().toHtml(ast)
-      (name, fileContent._1, rawHtmlContent, rawHtmlSnippet)
+      (name, fileContent._1, rawHtmlContent)
     }
   }
 }
 
 object SitemapBuilder {
-  import scala.xml._
 
   lazy val baseUrl = conf.getOrElse("url", "http://localhost")
 
   private def page(url: String) = {
     <url>
-      <loc>{baseUrl + "/" + url}</loc>
+      <loc>
+        {baseUrl + "/" + url}
+      </loc>
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
     </url>
@@ -121,7 +158,7 @@ object SitemapBuilder {
 
   def build(pages: Seq[(String, String)]) = {
     val root = <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>
-    val children = Seq.newBuilder[Node]
+    val children = Seq.newBuilder[scala.xml.Node]
     children += page("")
     children += page("#about")
     pages.foreach(p => children += page("#posts/" + p._1 + "/" + p._2))
@@ -131,17 +168,20 @@ object SitemapBuilder {
 
 object BlaarghWriter {
   val (pfMdFiles, pfOtherFiles) = ls ! postsFolder partition (_.ext == "md")
-  val entries = BlaarghParser.parse(pfMdFiles, pfOtherFiles)
+  lazy val entries = BlaarghParser.parse(pfMdFiles, pfOtherFiles)
 
   val (pgsMdFiles, pgsOtherFiles) = ls ! pagesFolder partition (_.ext == "md")
-  val pages = BlaarghParser.parse(pgsMdFiles, pgsOtherFiles, hasFrontMatter = false).map(n => (n._1, n._3, n._4))
+  lazy val pages = BlaarghParser.parse(pgsMdFiles, pgsOtherFiles, hasFrontMatter = false).map(n => (n._1, n._3))
 
   def generate() = {
+    println("Cleaning up posts folder...")
     rm ! postsTargetFolder
     mkdir ! postsTargetFolder
+    println("Cleaning up pages folder...")
     rm ! pagesTargetFolder
     mkdir ! pagesTargetFolder
 
+    println("Cleaning up sitemap.xml...")
     rm ! baseFolder / "sitemap.xml"
 
     for (of <- pgsOtherFiles) {
@@ -149,7 +189,7 @@ object BlaarghWriter {
     }
 
     println("Generating html files from _pages...")
-    for ((name, rawHtmlContent, _) <- pages) {
+    for ((name, rawHtmlContent) <- pages) {
       write(
         pagesTargetFolder / s"${name.replaceAll(" ", "_")}.html",
         rawHtmlContent
@@ -162,15 +202,18 @@ object BlaarghWriter {
 
     // Build and write the json file containing all blog article metadata.
     println("Generating posts/posts.json...")
-    val json: String = entries.map(e => FrontMatter.toJsonString(e._1, e._2)).mkString("[\n", ",\n", "\n]\n")
+    val json: String = entries
+      .map(e => FrontMatter.toJsonString(e._1, e._2))
+      .mkString("[\n", ",\n", "\n]\n")
     write(
       postsTargetFolder / "posts.json",
       json
     )
 
+    println("Preparing sitemap...")
     val sb = SitemapBuilder.build(
       entries.map {
-        case (name, fm, _, _) => (fm.date.get.toString, name.replaceAll(" ", "_"))
+        case (name, fm, _) => (fm.date.get.toString, name.replaceAll(" ", "_"))
       }
     )
 
@@ -181,7 +224,7 @@ object BlaarghWriter {
     )
 
     println("Generating html files from _posts...")
-    for ((name, fm, rawHtmlContent, _) <- entries) {
+    for ((name, _, rawHtmlContent) <- entries) {
       write(
         postsTargetFolder / s"${name.replaceAll(" ", "_")}.html",
         rawHtmlContent

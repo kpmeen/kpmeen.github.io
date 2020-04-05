@@ -6,8 +6,10 @@ import ammonite.ops._
 @main
 def main(postTitle: String = "") = {
   if (postTitle.isEmpty) {
+    println("Generating HTML pages...")
     BlaarghWriter.generate()
   } else {
+    println(s"Perparing new markdown post: $postTitle")
     val fm = FrontMatter(
       title = postTitle,
       author = "",
