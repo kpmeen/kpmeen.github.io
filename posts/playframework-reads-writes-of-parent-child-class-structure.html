@@ -1,12 +1,14 @@
-<p>The built-in JSON (de-)serialization mechanisms in the playframework are really powerful. But they have a couple of shortcomings. One of which is being able to (de-)serialize a trait or an abstract class as the correct child implementation.</p>
-<p>I've come across this scenario a couple of times now. Each time I've tried all sorts of different approaches. However, I keep falling back to this pattern based on <a href="https://gist.github.com/mandubian/8955241">a gist by @mandubian</a>.</p><h2 id="the - problem">The problem</h2>
-<p>Say we have the following simple representation of Animals</p>
-<pre><code class="scala">trait Animal
+<p>The built-in JSON (de-)serialization mechanisms in the playframework are really powerful.
+But they have a couple of shortcomings. One of which is being able to (de-)serialize a trait or an abstract class as the correct child implementation.</p>
+<p>I&rsquo;ve come across this scenario a couple of times now. Each time I&rsquo;ve tried all sorts of different approaches. However, I keep falling back to this pattern based on <a href="https://gist.github.com/mandubian/8955241">a gist by @mandubian</a>.</p>
+<h2>The problem</h2>
+<p id="the-problem">Say we have the following simple representation of Animals</p>
+<pre><code class="language-scala">trait Animal
 case class Cat(name: String) extends Animal
 case class Dog(name: String) extends Animal
 </code></pre>
 <p>If we now want need to expose Cats and Dogs as JSON, we would typically implement an implicit Reads and Writes for those case classes. A common pattern is to do this in the companion objects.</p>
-<pre><code class="scala">object Cat {
+<pre><code class="language-scala">object Cat {
   implicit val r: Reads[Cat] = Json.reads[Cat]
   implicit val w: Writes[Cat] = Json.writes[Cat]
 }
@@ -16,8 +18,8 @@ object Dog {
   implicit val w: Writes[Dog] = Json.writes[Dog]
 }
 </code></pre>
-<p>Now, let's say we want to create a case class for <code>PetOwner</code> that contains a list of owned pets.</p>
-<pre><code class="scala">case class PetOwner(name: String, pets: List[Animal])
+<p>Now, let&rsquo;s say we want to create a case class for <code>PetOwner</code> that contains a list of owned pets.</p>
+<pre><code class="language-scala">case class PetOwner(name: String, pets: List[Animal])
 
 object PetOwner {
   implicit val r: Reads[PetOwner] = Json.reads[PetOwner]
@@ -25,14 +27,17 @@ object PetOwner {
 }
 </code></pre>
 <p>Of course we would also like to be able to (de-)serialize this class from/to JSON. This is where the trouble begins. Typically you will get this type of error:</p>
-<pre><code class="">No implicit Reads for List[Animal] available.
+<pre><code>No implicit Reads for List[Animal] available.
 </code></pre>
 <p>and</p>
-<pre><code class="">No implicit Writes for List[Animal] available.
+<pre><code>No implicit Writes for List[Animal] available.
 </code></pre>
-<p>Because we are in the world of JSON, there is little to no information for the (de-)serialization mechanism to know which child type of Animal it should resolve to.</p><h2 id="a - solution">A solution</h2>
-<p>To help resolve the JSON to the correct type we introduce a "discriminator" attribute (I've called it <code>val $tpe = &quot;$type&quot;</code> here). This is basically a String value that identifies each child type of Animal. For the <code>Reads[Animal]</code> implementation we can then look for the "$type" key in the JSON message. And based on the value, we can explicitly use the reads defined for each child. A similar approach can be done for <code>Writes[Animal]</code>. Only here we do a pattern match on the child type, and for each of them we explicitly invoke its OWrites function <code>Cat.w.writes(...)</code>. Then we append a JsObject with the $tpe attribute <code>Json.obj($tpe -&gt; catClsName)</code> to ensure each Animal JSON contains which animal type it represents.</p>
-<pre><code class="scala">object Animal {
+<p>Because we are in the world of JSON, there is little to no information for the (de-)serialization mechanism to know which child type of Animal it should resolve to.</p>
+<h2>A solution</h2>
+<p id="a-solution">To help resolve the JSON to the correct type we introduce a &ldquo;discriminator&rdquo; attribute (I&rsquo;ve called it <code>val $tpe = &quot;$type&quot;</code> here). This is basically a String value that identifies each child type of Animal.
+For the <code>Reads[Animal]</code> implementation we can then look for the &ldquo;$type&rdquo; key in the JSON message. And based on the value, we can explicitly use the reads defined for each child.
+A similar approach can be done for <code>Writes[Animal]</code>. Only here we do a pattern match on the child type, and for each of them we explicitly invoke its OWrites function <code>Cat.w.writes(...)</code>. Then we append a JsObject with the $tpe attribute <code>Json.obj($tpe -&gt; catClsName)</code> to ensure each Animal JSON contains which animal type it represents.</p>
+<pre><code class="language-scala">object Animal {
   private val $tpe = &quot;$type&quot;
   private val catClsName = classOf[Cat].getSimpleName
   private val dogClsName = classOf[Dog].getSimpleName
@@ -51,11 +56,11 @@ object PetOwner {
 }
 </code></pre>
 <p>We are now able to read and write JSON correctly from our PetOwner class.</p>
-<pre><code class="scala">val owner = PetOwner(&quot;John&quot;, List(Cat(&quot;Garfield&quot;), Dog(&quot;Odie&quot;)))
+<pre><code class="language-scala">val owner = PetOwner(&quot;John&quot;, List(Cat(&quot;Garfield&quot;), Dog(&quot;Odie&quot;)))
 val ownerJson = Json.toJson[PetOwner](owner)
 </code></pre>
 <p>produces:</p>
-<pre><code class="javascript">{
+<pre><code class="language-javascript">{
   &quot;name&quot; : &quot;John&quot;,
   &quot;pets&quot; : [ {
     &quot;name&quot; : &quot;Garfield&quot;,
@@ -65,5 +70,6 @@ val ownerJson = Json.toJson[PetOwner](owner)
     &quot;$type&quot; : &quot;Dog&quot;
   } ]
 }
-</code></pre><h2 id="summary">Summary</h2>
-<p>This pattern does solve the problem. However it is a bit fiddly having to manipulate the parent companion object every time a new child implementation is needed. If someone has a better solution to this, I am very interested to hear about it.</p>
+</code></pre>
+<h2>Summary</h2>
+<p id="summary">This pattern does solve the problem. However it is a bit fiddly having to manipulate the parent companion object every time a new child implementation is needed. If someone has a better solution to this, I am very interested to hear about it.</p>

@@ -1,34 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url>
-      <loc>http://scalytica.net/</loc>
+      <loc>
+        http://scalytica.net/
+      </loc>
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
     </url><url>
-      <loc>http://scalytica.net/#about</loc>
+      <loc>
+        http://scalytica.net/#about
+      </loc>
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
     </url><url>
-      <loc>http://scalytica.net/#posts/2016-04-04/Blaargh</loc>
+      <loc>
+        http://scalytica.net/#posts/2016-04-04/Blaargh
+      </loc>
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
     </url><url>
-      <loc>http://scalytica.net/#posts/2016-07-10/ClammyScan_version_1.0.8</loc>
+      <loc>
+        http://scalytica.net/#posts/2016-07-10/ClammyScan_version_1.0.8
+      </loc>
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
     </url><url>
-      <loc>http://scalytica.net/#posts/2020-03-12/Running_ScalaSteward_with_GitLab_CI</loc>
+      <loc>
+        http://scalytica.net/#posts/2020-03-12/Running_ScalaSteward_with_GitLab_CI
+      </loc>
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
     </url><url>
-      <loc>http://scalytica.net/#posts/2014-09-13/introducing-clammyscan</loc>
+      <loc>
+        http://scalytica.net/#posts/2014-09-13/introducing-clammyscan
+      </loc>
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
     </url><url>
-      <loc>http://scalytica.net/#posts/2015-03-29/playframework-reads-writes-of-parent-child-class-structure</loc>
+      <loc>
+        http://scalytica.net/#posts/2015-03-29/playframework-reads-writes-of-parent-child-class-structure
+      </loc>
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
     </url><url>
-      <loc>http://scalytica.net/#posts/2016-04-04/renslebraten</loc>
+      <loc>
+        http://scalytica.net/#posts/2016-04-04/renslebraten
+      </loc>
       <priority>.5</priority>
       <changefreq>weekly</changefreq>
     </url></urlset>

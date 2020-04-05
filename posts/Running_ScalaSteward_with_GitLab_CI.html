@@ -1,83 +1,186 @@
-<p>Recently I came across a very cool project on GitHub called <a href="https://github.com/fthomas/scala-steward">ScalaSteward</a>. And at first glance the project seemed almost to good to be true. If I had to pick the top 5 pains of maintaining a project, constantly monitoring and updating dependencies would be be on that list!</p>
-<p>I keep most of my projects on <a href="https://gitlab.com/kpmeen">gitlab.com</a>, where I rely on GitLab CI for automation. So the natural next step for me, after discovering <a href="https://github.com/fthomas/scala-steward">ScalaSteward</a>, was to see if I could get it running on GitLab CI on a nightly schedule. And this post is all about explaining the steps I took to get it up and running.</p><h2 id="step - 1 - create - a - project - in - gitlab">Step 1: Create a project in GitLab</h2>
-<p>The first thing to do is create a new <strong>private</strong> project in GitLab. For <a href="https://gitlab.com">gitlab.com</a> this can be done by opening the <code>+</code> drop-down button in the UI, and selecting "New Project".</p>
-<p><div style="text-align: center"><img src="posts/gitlab_new_project.png" alt="GitLab New Project" style="max-width: 100%; max-height: 500px" /></div></p>
-<p>Fill in the relevant information in the form and finally click "Create project".</p>
-<p><div style="text-align: center"><img src="posts/gitlab_create_project_form.png" alt="GitLab Create Project" style="max-width: 100%; max-height: 500px" /></div></p>
-<p>For the purpose of this how-to, let's assume the project is named <code>scalasteward</code>.</p><h2 id="step - 2 - creating - a - project - local">Step 2: Creating a project (local)</h2>
-<p>After creating the GitLab project, we can now clone the repository to our local machine.</p>
-<pre><code class="bash">&gt; git clone git@gitlab.com:&lt;username&gt;/scalasteward.git
+<p>Recently I came across a very cool project on GitHub called <a href="https://github.com/fthomas/scala-steward">ScalaSteward</a>.
+And at first glance the project seemed almost to good to be true. If I had to pick the top 5 pains of maintaining a project,
+constantly monitoring and updating dependencies would be be on that list!</p>
+<p>I keep most of my projects on <a href="https://gitlab.com/kpmeen">gitlab.com</a>, where I rely on GitLab CI for automation. So the
+natural next step for me, after discovering <a href="https://github.com/fthomas/scala-steward">ScalaSteward</a>, was to see if I could
+get it running on GitLab CI on a nightly schedule. And this post is all about explaining the steps I took to get it up and
+running.</p>
+<h2>Step 1: Create a project in GitLab</h2>
+<p id="step-1-create-a-project-in-gitlab">The first thing to do is create a new <strong>private</strong> project in GitLab.
+For <a href="https://gitlab.com">gitlab.com</a> this can be done by opening the <code>+</code> drop-down
+button in the UI, and selecting &ldquo;New Project&rdquo;.</p>
+<p><div style="text-align: center">
+  <img src="posts/gitlab_new_project.png" alt="GitLab New Project" style="max-width: 100%; max-height: 500px;"/>
+</div></p>
+<p>Fill in the relevant information in the form and finally click &ldquo;Create project&rdquo;.</p>
+<p><div style="text-align: center">
+  <img src="posts/gitlab_create_project_form.png" alt="GitLab Create Project" style="max-width: 100%; max-height: 500px;"/>
+</div></p>
+<p>For the purpose of this how-to, let&rsquo;s assume the project is named <code>scalasteward</code>.</p>
+<h2>Step 2: Creating a project (local)</h2>
+<p id="step-2-creating-a-project-local">After creating the GitLab project, we can now clone the repository to our local machine.</p>
+<pre><code class="language-bash">&gt; git clone git@gitlab.com:&lt;username&gt;/scalasteward.git
 &gt; cd scalasteward
 </code></pre>
 <p>In our newly cloned repository directory, we can now start creating the necessary files and folders.</p>
 <ol>
-  <li>Create a directory called <code>workspace</code> and create a hidden file to ensure the directory will be  part of the initial commit.</li>
+  <li>
+    <p>Create a directory called <code>workspace</code> and create a hidden file to ensure the directory will be
+    part of the initial commit.</p>
+    <pre><code class="language-bash">&gt; mkdir workspace
+&gt; touch workspace/.keep
+</code></pre>
+  </li>
+  <li>
+    <p>Create a file called <code>run.sh</code> with the following content:</p>
+    <pre><code class="language-bash">#!/bin/bash
+
+git checkout master
+
+echo &quot;echo '$GL_KEY'&quot; &gt; pass.sh
+chmod +x pass.sh
+
+docker run \
+  -v $PWD:/opt/scala-steward \
+  -v $SBT_CACHE/:/root/.sbt \
+  fthomas/scala-steward:latest \
+  --disable-sandbox \
+  --env-var LOG_LEVEL=TRACE \
+  --do-not-fork \
+  --workspace &quot;/opt/scala-steward/workspace&quot; \
+  --repos-file &quot;/opt/scala-steward/repos.md&quot; \
+  --git-ask-pass &quot;/opt/scala-steward/pass.sh&quot; \
+  --git-author-email &quot;&lt;gitlab_login&gt;&quot; \
+  --vcs-type &quot;gitlab&quot; \
+  --vcs-api-host &quot;https://gitlab.com/api/v4/&quot; \
+  --vcs-login &quot;&lt;gitlab_login&gt;&quot;
+
+rm pass.sh
+
+# Commit and push changes to files in the workspace directory.
+git add workspace
+git commit -m &quot;New Scala Steward run...[skip ci]&quot;
+git push https://&lt;gitlab_login&gt;:$GL_KEY@gitlab.com/&lt;namespace&gt;/scalasteward.git --all
+</code></pre>
+    <p>Replace each occurrence of <code>&lt;gitlab_login&gt;</code> with your own user login to gitlab, and
+    each <code>&lt;namespace&gt;</code> with the namespace where your <code>scalasteward</code> project was created.</p>
+    <p>The significance of the environment variable <code>$GL_KEY</code> will be addressed in the next step.</p>
+    <p>This script will be used to start Scala Steward in GitLab CI.</p>
+  </li>
 </ol>
-<p><code>bash
-   &gt; mkdir workspace
-   &gt; touch workspace/.keep
-</code></p>
-<ol>
-  <li>Create a file called <code>run.sh</code> with the following content:</li>
-</ol>
-<p>```bash  #!/bin/bash</p>
-<p>git checkout master</p>
-<p>echo "echo '$GL_KEY'" &gt; pass.sh  chmod +x pass.sh</p>
-<p>docker run \  -v $PWD:/opt/scala-steward \  -v $SBT_CACHE/:/root/.sbt \  fthomas/scala-steward:latest \  --disable-sandbox \  --env-var LOG_LEVEL=TRACE \  --do-not-fork \  --workspace "/opt/scala-steward/workspace" \  --repos-file "/opt/scala-steward/repos.md" \  --git-ask-pass "/opt/scala-steward/pass.sh" \  --git-author-email "<gitlab_login>" \  --vcs-type "gitlab" \  --vcs-api-host "https://gitlab.com/api/v4/" \  --vcs-login "<gitlab_login>"</p>
-<p>rm pass.sh</p>
-<p># Commit and push changes to files in the workspace directory.  git add workspace  git commit -m "New Scala Steward run...[skip ci]"  git push https://<gitlab_login>:$GL_KEY@gitlab.com/<namespace>/scalasteward.git --all  ```</p>
-<p>Replace each occurrence of <code>&lt;gitlab_login&gt;</code> with your own user login to gitlab, and  each <code>&lt;namespace&gt;</code> with the namespace where your <code>scalasteward</code> project was created.</p>
-<p>The significance of the environment variable <code>$GL_KEY</code> will be addressed in the next step.</p>
-<p>This script will be used to start Scala Steward in GitLab CI.</p><h2 id="step - 3 - create - an - api - token - and - make - it - available - for - the - ci - job">Step 3: Create an API token and make it available for the CI job</h2><h4 id="creating - a - new - access - token">Creating a new access token</h4>
-<p>For ScalaSteward to be able to access the newly created repository, and to commit any changes to the <code>workspace</code> directory back to the repository, we need to create an <em>access token</em>. This can be done at <a href="https://gitlab.com/profile/personal_access_tokens">gitlab.com/profile/personal_access_tokens</a>.</p>
+<h2>Step 3: Create an API token and make it available for the CI job</h2><h4 id="step-3-create-an-api-token-and-make-it-available-for-the-ci-job">Creating a new access token</h4>
+<p id="creating-a-new-access-token">For ScalaSteward to be able to access the newly created repository, and to commit any changes
+to the <code>workspace</code> directory back to the repository, we need to create an <em>access token</em>. This
+can be done at <a href="https://gitlab.com/profile/personal_access_tokens">gitlab.com/profile/personal_access_tokens</a>.</p>
 <p>Make sure to check the boxes for <code>read_repository</code> and <code>write_repository</code>.</p>
 <p>Make sure you save the access token somewhere safe. The access token value will not be visible again.</p>
-<p><div style="text-align: center"><img src="posts/gitlab_create_accesstoken.png" alt="GitLab Create Access Token" style="max-width: 100%; max-height: 500px" /></div></p><h4 id="register - the - access - token - as - a - ci - variable">Register the access token as a CI variable</h4>
-<p>Next, we need to register the access token in a CI variable. Navigate back to the GitLab project, and open the settings for CI. Typically found at this URL: <code>https://gitlab.com/&lt;namespace&gt;/scalasteward/-/settings/ci_cd</code>.</p>
-<p>Then, create a variable called <code>GL_KEY</code> and enter the newly created access token. Enable both "Protected" and "Masked" to protect your token.</p>
-<p><div style="text-align: center"><img src="posts/gitlab_ci_variable.png" alt="GitLab CI Variable" style="max-width: 100%; max-height: 500px" /></div></p><h2 id="step - 4 - defining - the - build - script">Step 4: Defining the build script</h2>
-<p>We are now ready to define the CI script that will trigger the running of ScalaSteward.</p>
+<p><div style="text-align: center">
+  <img src="posts/gitlab_create_accesstoken.png" alt="GitLab Create Access Token" style="max-width: 100%; max-height: 500px;"/>
+</div></p>
+<h4>Register the access token as a CI variable</h4>
+<p id="register-the-access-token-as-a-ci-variable">Next, we need to register the access token in a CI variable. Navigate back to the GitLab
+project, and open the settings for CI. Typically found at this URL: <code>https://gitlab.com/&lt;namespace&gt;/scalasteward/-/settings/ci_cd</code>.</p>
+<p>Then, create a variable called <code>GL_KEY</code> and enter the newly created access token. Enable both
+&ldquo;Protected&rdquo; and &ldquo;Masked&rdquo; to protect your token.</p>
+<p><div style="text-align: center">
+  <img src="posts/gitlab_ci_variable.png" alt="GitLab CI Variable" style="max-width: 100%; max-height: 500px;"/>
+</div></p>
+<h2>Step 4: Defining the build script</h2>
+<p id="step-4-defining-the-build-script">We are now ready to define the CI script that will trigger the running of ScalaSteward.</p>
 <ol>
-  <li>Create a new file called <code>.gitlab-ci.yml</code> at the root of your project directory.</li>
-  <li>Enter the following into the <code>.gitlab-ci.yml</code> file:</li>
+  <li>
+    <p>Create a new file called <code>.gitlab-ci.yml</code> at the root of your project directory.</p>
+  </li>
+  <li>
+    <p>Enter the following into the <code>.gitlab-ci.yml</code> file:</p>
+    <pre><code class="language-yaml">image: registry.gitlab.com/kpmeen/docker-scala-sbt:scala_2.12_jdk11
+
+variables:
+  DOCKER_DRIVER: overlay
+  COURSIER_CACHE: &quot;/root/cache/coursier&quot;
+  SBT_CACHE: &quot;/root/cache/sbt&quot;
+
+cache:
+  untracked: true
+  paths:
+    - cache
+    - workspace
+
+stages:
+  - steward
+
+check dependencies:
+  stage: steward
+  tags:
+    - docker
+  services:
+    - docker:dind
+  script:
+    - ./run.sh
+  only:
+    - master@&lt;namespace&gt;/scalasteward
+</code></pre>
+    <p>The docker image <code>registry.gitlab.com/kpmeen/docker-scala-sbt:scala_2.12_jdk11</code> is an image
+    I build and use for building scala projects on GitLab CI, and contains the necessary basics.</p>
+    <p>As before, replace any occurrences of <code>&lt;namespace&gt;</code> with the actual project namespace.</p>
+  </li>
 </ol>
-<p>```yaml  image: registry.gitlab.com/kpmeen/docker-scala-sbt:scala_2.12_jdk11</p>
-<p>variables:  DOCKER_DRIVER: overlay  COURSIER_CACHE: "/root/cache/coursier"  SBT_CACHE: "/root/cache/sbt"</p>
-<p>cache:  untracked: true  paths:  - cache  - workspace</p>
-<p>stages:  - steward</p>
-<p>check dependencies:  stage: steward  tags:  - docker  services:  - docker:dind  script:  - ./run.sh  only:  - master@<namespace>/scalasteward  ```</p>
-<p>The docker image <code>registry.gitlab.com/kpmeen/docker-scala-sbt:scala_2.12_jdk11</code> is an image  I build and use for building scala projects on GitLab CI, and contains the necessary basics.</p>
-<p>As before, replace any occurrences of <code>&lt;namespace&gt;</code> with the actual project namespace.</p><h2 id="step - 5 - configure - which - gitlab - repositories - to - check">Step 5: Configure which GitLab repositories to check</h2>
-<p>For ScalaSteward to know which repositories it should check, it needs a configuration file.</p>
+<h2>Step 5: Configure which GitLab repositories to check</h2>
+<p id="step-5-configure-which-gitlab-repositories-to-check">For ScalaSteward to know which repositories it should check, it needs a configuration file.</p>
 <ol>
-  <li>Create a new file at the root of the project called <code>repos.md</code></li>
-  <li>Edit the file and add a markdown formatted list of repositories you would like to have checked.</li>
+  <li>
+    <p>Create a new file at the root of the project called <code>repos.md</code></p>
+  </li>
+  <li>
+    <p>Edit the file and add a markdown formatted list of repositories you would like to have checked.</p>
+    <pre><code class="language-markdown">- foo/myproject
+- foo/another-project
+- bar/very_important_program
+</code></pre>
+    <p>Or you can have a look at an example config here https://raw.githubusercontent.com/fthomas/scala-steward/master/repos.md.</p>
+  </li>
 </ol>
-<p><code>markdown
-   - foo/myproject
-   - foo/another-project
-   - bar/very_important_program
-</code></p>
-<p>Or you can have a look at an example config here https://raw.githubusercontent.com/fthomas/scala-steward/master/repos.md.</p><h2 id="step - 6 - commit - and - push - the - project - to - the - gitlab - repository">Step 6: Commit and push the project to the GitLab repository</h2>
-<p>The setup is now almost complete, and we can now commit and push the project up to GitLab.</p>
-<pre><code class="bash">&gt; git add run.sh workspace .gitlab-ci.yml repos.md
+<h2>Step 6: Commit and push the project to the GitLab repository</h2>
+<p id="step-6-commit-and-push-the-project-to-the-gitlab-repository">The setup is now almost complete, and we can now commit and push the project up to GitLab.</p>
+<pre><code class="language-bash">&gt; git add run.sh workspace .gitlab-ci.yml repos.md
 &gt; git commit -m &quot;Initial commit&quot;
 </code></pre>
-<p>GitLab CI will automatically trigger a new execution of the CI pipeline, because of the <code>.gitlab-ci.yml</code> file. Let the pipeline complete and verify that it completes successfully. A successfull run will typically result in some merge request being made against the configured repos. There will also be a new commit in the <code>scalasteward</code> GitLab project with the message <code>New Scala Steward run...[skip ci]</code>.</p><h2 id="step - 6 - setting - up - the - build - schedule">Step 6: Setting up the build schedule</h2>
-<p>Once the initial pipeline has executed successfully, we can setup the scheduled execution.</p>
-<ol>
-  <li>Navigate to the "Schedules" overview under "CI / CD" in the menu on the left-hand side  of the GitLab UI. This will bring you to a URL like <code>https://gitlab.com/&lt;namespace&gt;/calasteward/pipeline_schedules</code>.</li>
-</ol>
-<p><div style="text-align: center"><img src="posts/gitlab_ci_schedules.png" alt="GitLab CI Schedules" style="max-width: 100%; max-height: 500px" /></div>.</p>
+<p>GitLab CI will automatically trigger a new execution of the CI pipeline, because
+of the <code>.gitlab-ci.yml</code> file. Let the pipeline complete and verify that it completes
+successfully. A successfull run will typically result in some merge request being
+made against the configured repos. There will also be a new commit in the
+<code>scalasteward</code> GitLab project with the message <code>New Scala Steward run...[skip ci]</code>.</p>
+<h2>Step 6: Setting up the build schedule</h2>
+<p id="step-6-setting-up-the-build-schedule">Once the initial pipeline has executed successfully, we can setup the scheduled execution.</p>
 <ol>
   <li>
-  <p>Next, create a new schedule by clicking the "New Schedule" button.</p></li>
+    <p>Navigate to the &ldquo;Schedules&rdquo; overview under &ldquo;CI / CD&rdquo; in the menu on the left-hand side
+    of the GitLab UI. This will bring you to a URL like <code>https://gitlab.com/&lt;namespace&gt;/calasteward/pipeline_schedules</code>.</p>
+    <p><div style="text-align: center">
+      <img src="posts/gitlab_ci_schedules.png" alt="GitLab CI Schedules" style="max-width: 100%; max-height: 500px;"/>
+    </div>.</p>
+  </li>
   <li>
-  <p>This brings up the form for creating a new schedule for executing the CI/CD pipeline.  Enter the required details, and specify specify the "Interval Pattern" for your job  using Cron syntax. To execute the job at 01:00 every night, set the value to <code>0 1 * * *</code>.</p></li>
+    <p>Next, create a new schedule by clicking the &ldquo;New Schedule&rdquo; button.</p>
+  </li>
+  <li>
+    <p>This brings up the form for creating a new schedule for executing the CI/CD pipeline.
+    Enter the required details, and specify specify the &ldquo;Interval Pattern&rdquo; for your job
+    using Cron syntax. To execute the job at 01:00 every night, set the value to <code>0 1 * * *</code>.</p>
+    <p><div style="text-align: center">
+      <img src="posts/gitlab_ci_create_schedule.png" alt="GitLab CI Create Schedule" style="max-width: 100%; max-height: 500px;"/>
+    </div></p>
+    <p>Make sure you save the schedule once you&rsquo;re happy with the settings.</p>
+  </li>
 </ol>
-<p><div style="text-align: center"><img src="posts/gitlab_ci_create_schedule.png" alt="GitLab CI Create Schedule" style="max-width: 100%; max-height: 500px" /></div></p>
-<p>Make sure you save the schedule once you're happy with the settings.</p><h2 id="step - 7 - testing - the - schedule">Step 7: Testing the schedule</h2>
-<p>When you save the form, you'll be taken to the "Schedules" page where your newly created schedule is listed. To start an execution, press the play button.</p>
-<p><div style="text-align: center"><img src="posts/gitlab_test_schedule.png" alt="GitLab Test Schedule" style="max-width: 100%; max-height: 500px" /></div></p>
-<p>Once the pipeline has started, you can follow the progress in the "Pipelines" view of the "CI / CD" section.</p><h2 id="done">Done</h2>
-<p>That's it! If you followed along with these steps, you should now get regular merge requests with dependency updates to the projects in the <code>repos.md</code> file.</p>
+<h2>Step 7: Testing the schedule</h2>
+<p id="step-7-testing-the-schedule">When you save the form, you&rsquo;ll be taken to the &ldquo;Schedules&rdquo; page where your newly created
+schedule is listed. To start an execution, press the play button.</p>
+<p><div style="text-align: center">
+  <img src="posts/gitlab_test_schedule.png" alt="GitLab Test Schedule" style="max-width: 100%; max-height: 500px;"/>
+</div></p>
+<p>Once the pipeline has started, you can follow the progress in the &ldquo;Pipelines&rdquo; view of the
+&ldquo;CI / CD&rdquo; section.</p>
+<h2>Done</h2>
+<p id="done">That&rsquo;s it! If you followed along with these steps, you should now get regular merge requests
+with dependency updates to the projects in the <code>repos.md</code> file.</p>
