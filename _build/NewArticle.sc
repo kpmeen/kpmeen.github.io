@@ -1,11 +1,17 @@
-import $file.Frontmatter, Frontmatter._
+import java.awt._
+import java.awt.event._
+
 import $file.Common, Common._
+import $file.Frontmatter, Frontmatter._
+
 import ammonite.ops._
-import scala.util.Try
-import javax.swing._, java.awt._, java.awt.event._
+import javax.swing._
 import javax.swing.filechooser.FileFilter
 
-object CreateFrame {
+import scala.concurrent.duration._
+import scala.util.Try
+
+object NewArticleFrame {
 
   class ImageFilter extends FileFilter {
     val imgFormats = Seq("tiff", "tif", "jpeg", "jpg", "gif", "png", "svg")
@@ -13,8 +19,8 @@ object CreateFrame {
     def getExtension(f: java.io.File): Option[String] =
       Option(f.getName).flatMap { s =>
         val idx = s.lastIndexOf('.')
-        if (idx > 0 && idx < s.length -1)
-          Option(s.substring(idx+1).toLowerCase())
+        if (idx > 0 && idx < s.length - 1)
+          Option(s.substring(idx + 1).toLowerCase())
         else None
       }
 
@@ -47,12 +53,10 @@ object CreateFrame {
   fileImage.setAcceptAllFileFilterUsed(false)
 
   val addImageBtn = new JButton("Add Image")
-  addImageBtn.addActionListener(new ActionListener {
-    def actionPerformed(e: ActionEvent) = {
-      val res = fileImage.showOpenDialog(frame)
-      if (res == JFileChooser.APPROVE_OPTION)
-        selectedFile.setText(Option(fileImage.getSelectedFile.getName).getOrElse(""))
-    }
+  addImageBtn.addActionListener((_: ActionEvent) => {
+    val res = fileImage.showOpenDialog(frame)
+    if (res == JFileChooser.APPROVE_OPTION)
+      selectedFile.setText(Option(fileImage.getSelectedFile.getName).getOrElse(""))
   })
 
   // =====  Labels and Fields =====
@@ -65,58 +69,7 @@ object CreateFrame {
     (labelSelectedFile, selectedFile)
   )
 
-  def build() = {
-    val inputPanel = new JPanel(new GridBagLayout())
-    val constraints = new GridBagConstraints()
-    constraints.anchor = GridBagConstraints.WEST
-    constraints.insets = new Insets(10, 10, 10, 10)
-
-    labelsFields.zipWithIndex.foreach { lf =>
-      val lbl = lf._1._1
-      val fld = lf._1._2
-      constraints.gridx = 0
-      constraints.gridy = lf._2
-      inputPanel.add(lbl, constraints)
-
-      constraints.gridx = 1
-      inputPanel.add(fld, constraints)
-    }
-
-    val doneButton = new JButton("Create")
-    doneButton.addActionListener(new ActionListener {
-      def actionPerformed(e: ActionEvent) = {
-        handleDoneButton(e)
-        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING))
-      }
-    })
-    val cancelButton = new JButton("Cancel")
-    cancelButton.addActionListener(new ActionListener {
-      def actionPerformed(e: ActionEvent) =
-        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING))
-    })
-
-    val btnPanel = new JPanel(new GridBagLayout())
-    val btnConstraints = new GridBagConstraints()
-    btnConstraints.anchor = GridBagConstraints.WEST
-    btnConstraints.gridx = 0
-    btnConstraints.gridy = 0
-    btnPanel.add(cancelButton, btnConstraints)
-    btnConstraints.gridx = 1
-    btnPanel.add(doneButton, btnConstraints)
-
-    constraints.gridx = 0
-    constraints.gridy = labelsFields.length + 1
-    constraints.gridwidth = 2;
-    constraints.anchor = GridBagConstraints.CENTER
-    inputPanel.add(btnPanel, constraints)
-
-    frame.getContentPane.add(inputPanel)
-    frame.pack()
-    frame.setVisible(true)
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
-  }
-
-  def handleDoneButton(e: ActionEvent) = {
+  def handleDoneButton(e: ActionEvent): Unit = {
     val maybeFileName = Option(fileImage.getSelectedFile).map { f =>
       val destFile = postsFolder / f.getName
       cp(Path(f), destFile)
@@ -138,16 +91,66 @@ object CreateFrame {
     )
   }
 
+  def build(): JFrame = {
+    val inputPanel = new JPanel(new GridBagLayout())
+    val constraints = new GridBagConstraints()
+    constraints.anchor = GridBagConstraints.WEST
+    constraints.insets = new Insets(10, 10, 10, 10)
+
+    labelsFields.zipWithIndex.foreach { lf =>
+      val lbl = lf._1._1
+      val fld = lf._1._2
+      constraints.gridx = 0
+      constraints.gridy = lf._2
+      inputPanel.add(lbl, constraints)
+
+      constraints.gridx = 1
+      inputPanel.add(fld, constraints)
+    }
+
+    val doneButton = new JButton("Create")
+    doneButton.addActionListener((e: ActionEvent) => {
+      handleDoneButton(e)
+      frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING))
+    })
+    val cancelButton = new JButton("Cancel")
+    cancelButton.addActionListener((_: ActionEvent) => {
+      frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING))
+    })
+
+    val btnPanel = new JPanel(new GridBagLayout())
+    val btnConstraints = new GridBagConstraints()
+    btnConstraints.anchor = GridBagConstraints.WEST
+    btnConstraints.gridx = 0
+    btnConstraints.gridy = 0
+    btnPanel.add(cancelButton, btnConstraints)
+    btnConstraints.gridx = 1
+    btnPanel.add(doneButton, btnConstraints)
+
+    constraints.gridx = 0
+    constraints.gridy = labelsFields.length + 1
+    constraints.gridwidth = 2
+    constraints.anchor = GridBagConstraints.CENTER
+    inputPanel.add(btnPanel, constraints)
+
+    frame.getContentPane.add(inputPanel)
+    frame.pack()
+    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
+    frame
+  }
 }
 
+println("Attempting to set system L&F...")
+
 Try {
-  UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+  UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 }.recover {
   case ex: Exception => ex.printStackTrace()
 }
 
-SwingUtilities.invokeLater(new Runnable() {
-  def run(): Unit = {
-    CreateFrame.build()
-  }
-})
+val frame = NewArticleFrame.build()
+frame.setVisible(true)
+
+while(frame.isVisible) {
+  Thread.sleep(5.seconds.toMillis)
+}

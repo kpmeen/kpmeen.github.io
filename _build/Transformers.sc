@@ -1,9 +1,8 @@
-import $file.Common
-import $file.Frontmatter
+import $file.Common, Common._
+import $file.Frontmatter, Frontmatter._
 import $ivy.`com.vladsch.flexmark:flexmark-all:0.61.0`
 import $ivy.`org.yaml:snakeyaml:1.26`
-import Common._
-import Frontmatter._
+
 import ammonite.ops._
 import com.vladsch.flexmark.ast._
 import com.vladsch.flexmark.ext.tables.{TableBlock, TableHead}
@@ -20,7 +19,7 @@ import com.vladsch.flexmark.util.ast.Document
 import com.vladsch.flexmark.util.data.{DataHolder, MutableDataHolder}
 import org.yaml.snakeyaml.Yaml
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 val yaml = new Yaml
 lazy val conf = yaml.load(read ! configFile).asInstanceOf[java.util.Map[String, Any]].asScala
@@ -114,17 +113,6 @@ class BlaarghSerializer {
 }
 
 object BlaarghParser {
-  private val separator = "---"
-  private val remove = "€€€REMOVE€€€"
-
-  // Separate FrontMatter header from the markdown content
-  private def parseFrontMatter(source: String): (FrontMatter, String) = {
-    val split = source.stripPrefix(separator).replaceFirst(separator, remove).split(remove)
-    val fm = FrontMatter.parse(split(0))
-    val md = split(1)
-
-    (fm, md)
-  }
 
   private def resolveName(mfd: Path): (String, Path) = (mfd.last.stripSuffix(".md"), mfd)
 
@@ -133,7 +121,7 @@ object BlaarghParser {
 
     for ((name, path) <- split.sortBy(_._1)) yield {
       val processor = Parser.builder(options).build()
-      val fileContent = if (hasFrontMatter) parseFrontMatter(read ! path) else (FrontMatter.empty, read ! path)
+      val fileContent = if (hasFrontMatter) FrontMatter.parseFrontMatter(read ! path) else (FrontMatter.empty, read ! path)
       val doc = processor.parse(fileContent._2)
       val rawHtmlContent = new BlaarghSerializer().toHtml(doc)
 

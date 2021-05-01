@@ -1,8 +1,12 @@
-import $file.Common, Common._
 import $ivy.`org.yaml:snakeyaml:1.26`
+import $file.Common, Common._
+
 import org.yaml.snakeyaml.Yaml
-import scala.collection.JavaConverters._
+
+import scala.jdk.CollectionConverters._
 import scala.collection.Map
+import scala.language.implicitConversions
+import ammonite.ops._
 
 case class FrontMatter(
   title: String,
@@ -13,6 +17,8 @@ case class FrontMatter(
   image: Option[String],
   misc: Map[String, Any]
 ) {
+
+  def labelsString: String = labels.toSeq.flatten.mkString(", ")
 
   def toYaml: String = {
     val m = {
@@ -68,6 +74,22 @@ object FrontMatter {
     image = None,
     misc = Map.empty
   )
+
+  private val separator = "---"
+  private val remove = "€€€REMOVE€€€"
+
+  def parseFromPath(path: Path): (FrontMatter, String) = {
+    parseFrontMatter(read ! path)
+  }
+
+  // Separate FrontMatter header from the markdown content
+  def parseFrontMatter(source: String): (FrontMatter, String) = {
+    val split = source.stripPrefix(separator).replaceFirst(separator, remove).split(remove)
+    val fm = FrontMatter.parse(split(0))
+    val md = split(1)
+
+    (fm, md)
+  }
 
   def parse(header: String): FrontMatter = {
     val yaml = new Yaml

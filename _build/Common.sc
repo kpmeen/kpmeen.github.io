@@ -1,4 +1,5 @@
 import $ivy.`com.vladsch.flexmark:flexmark-all:0.61.0`
+
 import ammonite.ops._
 import com.vladsch.flexmark.ext.abbreviation.AbbreviationExtension
 import com.vladsch.flexmark.ext.definition.DefinitionExtension
@@ -9,18 +10,18 @@ import com.vladsch.flexmark.parser.{Parser, ParserEmulationProfile}
 import com.vladsch.flexmark.util.data.MutableDataSet
 import com.vladsch.flexmark.util.misc.Extension
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
-val workingDir = pwd
+val workingDir: os.Path = pwd
 
 println(s"Current working directory is: $workingDir")
 
-val baseFolder = workingDir / up
-val postsFolder = baseFolder / '_posts
-val postsTargetFolder = baseFolder / 'posts
-val pagesFolder = baseFolder / '_pages
-val pagesTargetFolder = baseFolder / 'pages
-val configFile = baseFolder / "config" / "config.json"
+val baseFolder: os.Path = workingDir / up
+val postsFolder: os.Path = baseFolder / Symbol("_posts")
+val postsTargetFolder: os.Path = baseFolder / Symbol("posts")
+val pagesFolder: os.Path = baseFolder / Symbol("_pages")
+val pagesTargetFolder: os.Path = baseFolder / Symbol("pages")
+val configFile: os.Path = baseFolder / Symbol("config") / Symbol("config.json")
 
 val abbrExts = AbbreviationExtension.create()
 val defnExts = DefinitionExtension.create()

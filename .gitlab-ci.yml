@@ -1,23 +1,70 @@
-# GitLab CI script for publishing on gitlab pages
-image: registry.gitlab.com/kpmeen/docker-scala-sbt:scala_2.12
+image: registry.gitlab.com/kpmeen/docker-scala-sbt:scala_2.13_jdk11
 
-pages:
+variables:
+  CI: "true"
+  DOCKER_DRIVER: overlay
+  # Setting specific folder for sbt-coursier to cache artifacts
+  COURSIER_CACHE: "/root/cache/coursier"
+
+cache:
+  untracked: true
+  paths:
+    - cache
+
+stages:
+  - build
+  - deploy
+
+pages:scalac:
+  stage: build
+  tags:
+    - docker
   script:
-  - curl -L -o /usr/local/bin/amm https://git.io/vdNv2 && chmod +x /usr/local/bin/amm
-  - cd _build
-  - amm Publish.sc
-  - cd ..
-  - mkdir public
-  - mv index.html public
-  - mv assets public
-  - mv config public
-  - mv pages public
-  - mv posts public
-  - mv sitemap.xml public
-  - mv CNAME public
-  - mv 404.html public
+    - cd _project
+    - sbt fullOptJS
+    - cd ..
   artifacts:
     paths:
-    - public
+      - _project/target
+      - assets
+
+pages:build:
+  stage: build
+  tags:
+    - docker
+  dependencies:
+    - pages:scalac
+  script:
+    - cd _build
+    - curl -L https://github.com/lihaoyi/ammonite/releases/download/2.3.8/2.13-2.3.8-bootstrap > amm && chmod +x amm
+    - ./amm Publish.sc
+    - cd ..
+    - rm -rf .build
+    - mkdir .build
+    - cp *.html .build
+    - cp CNAME .build
+    - cp sitemap.xml .build
+    - cp -r assets .build
+    - cp -r config .build
+    - cp -r pages .build
+    - cp -r posts .build
+  artifacts:
+    paths:
+      - .build
   only:
-  - master
+    refs:
+      - master
+
+pages:
+  stage: deploy
+  dependencies:
+    - pages:build
+  script:
+    - rm -rf public
+    - mv .build public
+  artifacts:
+    paths:
+      - public
+  only:
+    refs:
+      - master
